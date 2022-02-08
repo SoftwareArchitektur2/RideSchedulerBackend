@@ -1,6 +1,7 @@
 package de.hsw.ridescheduler.beans;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,17 +14,19 @@ public class BusStop {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "hasWifi", nullable = true)
+    private Boolean hasWifi;
+
     @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL)
-    private List<BusStopInBusLine> busLines;
+    private List<BusStopInBusLine> busLines = new ArrayList<>();
 
     public BusStop() {
 
     }
 
-    public BusStop(Long id, String name, List<BusStopInBusLine> busLines) {
-        this.id = id;
+    public BusStop(String name, Boolean hasWifi) {
         this.name = name;
-        this.busLines = busLines;
+        this.hasWifi = hasWifi;
     }
 
     public Long getId() {
@@ -50,11 +53,19 @@ public class BusStop {
         this.busLines = busLines;
     }
 
-    public void addBusline(BusStopInBusLine busLine) {
+    public void addBusLine(BusStopInBusLine busLine) {
         this.busLines.add(busLine);
     }
 
-    public void removeBusline(BusStopInBusLine busLine) {
+    public void removeBusLine(BusStopInBusLine busLine) {
         this.busLines.remove(busLine);
+    }
+
+    public Boolean getHasWifi() {
+        return hasWifi;
+    }
+
+    public void setHasWifi(Boolean hasWifi) {
+        this.hasWifi = hasWifi;
     }
 }

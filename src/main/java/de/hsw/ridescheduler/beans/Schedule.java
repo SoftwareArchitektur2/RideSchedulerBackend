@@ -25,8 +25,7 @@ public class Schedule {
 
     }
 
-    public Schedule(Long id, BusLine busLine, Date departureTime, BusStop destinationStop) {
-        this.id = id;
+    public Schedule(BusLine busLine, Date departureTime, BusStop destinationStop) {
         this.busLine = busLine;
         this.departureTime = departureTime;
         this.destinationStop = destinationStop;
