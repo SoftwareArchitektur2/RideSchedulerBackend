@@ -1,9 +1,9 @@
 package de.hsw.ridescheduler.services;
-
-import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
+import de.hsw.ridescheduler.exceptions.BusStopHasBusLinesException;
+import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusStopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +22,14 @@ public class BusStopService {
     }
 
     public void saveBusStop(BusStop busStop) {
-        if(this.busStopRepository.existsByName(busStop.getName())) {
+        if (this.busStopRepository.existsByName(busStop.getName())) {
             throw new BusStopAlreadyExistsException(busStop.getName());
         }
         this.busStopRepository.save(busStop);
     }
 
     public List<BusStop> getAllBusStops() {
-            return this.busStopRepository.findAll();
+        return this.busStopRepository.findAll();
     }
 
     public Optional<BusStop> getBusStopByName(String name) {
@@ -54,20 +54,28 @@ public class BusStopService {
 
     public void addBusLine(Long id, BusStopInBusLine busLine) {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
-        BusStop busStop = busStopOptional.orElseThrow(() -> new IllegalArgumentException("BusStop not found"));
+        BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
         busStop.addBusLine(busLine);
     }
 
     public void removeBusLine(Long id, BusStopInBusLine busLine) {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
-        BusStop busStop = busStopOptional.orElseThrow(() -> new IllegalArgumentException("BusStop not found"));
+        BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
         busStop.removeBusLine(busLine);
     }
 
     public void deleteBusStopById(Long id) {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
-        if(busStopOptional.isPresent() && busStopOptional.get().getBusLines().isEmpty()) {
-            busStopRepository.deleteById(id);
+        BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
+        if (!busStop.getBusLines().isEmpty()) {
+            String names = "";
+            for (BusStopInBusLine bus : busStop.getBusLines()) {
+                names += bus.getBusLine().getName() + ",";
+            }
+            throw new BusStopHasBusLinesException(names);
+
         }
+        busStopRepository.deleteById(id);
     }
+    
 }

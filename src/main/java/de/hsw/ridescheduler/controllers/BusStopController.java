@@ -31,6 +31,6 @@ public class BusStopController {
 
     @DeleteMapping("/busStops/{id}")
     public void deleteBusStop(@PathVariable("id") Long id) {
-        //Löschen eines Busstops mit id aus dem Path
+        this.busStopService.deleteBusStopById(id);
     }
 }
