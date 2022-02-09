@@ -1,54 +1,85 @@
 package de.hsw.ridescheduler.controllers;
 
+import de.hsw.ridescheduler.beans.BusLine;
+import de.hsw.ridescheduler.beans.BusStop;
+import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.dtos.*;
+import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
+import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.services.BusLineService;
+import de.hsw.ridescheduler.services.BusStopService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class BusLineController {
 
     private BusLineService busLineService;
+    private BusStopService busStopService;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public BusLineController(BusLineService busLineService) {
+    public BusLineController(BusLineService busLineService, BusStopService busStopService,ModelMapper modelMapper) {
         this.busLineService = busLineService;
+        this.busStopService = busStopService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping("/busLines")
-    public void getAllBuslines() {
-        //Return alle Buslinien
-        //Requestbody mit optionaler Haltestelle -> Dann nur die Buslinien, die daran angebunden sind
+    public List<BusLineResponse> getAllBuslines() {
+        List<BusLine> busLines = busLineService.getAllBusLines();
+        List<BusLineResponse> busLineResponses = new ArrayList<>();
+        this.modelMapper.map(busLines, busLineResponses);
+        return busLineResponses;
     }
 
     @PostMapping("/buslines")
-    public void addBusline(@RequestBody String busline) {
-
+    public void addBusline(@RequestBody AddBusLineRequest addBusLineRequest) {
+        this.busLineService.saveBusLine(this.modelMapper.map(addBusLineRequest, BusLine.class));
     }
 
     @PatchMapping("/busLines/{id}")
-    public void updateBusline(@RequestBody String busline) {
-        //Update einer Buslinie
-        //Body neuen namen der Buslinie
+    public void updateBusline(@RequestParam("id") Long id, @RequestBody UpdateBusLineRequest updateBusLineRequest) {
+        BusLine busLine = this.busLineService.getBusLineById(id)
+                .orElseThrow(() -> new BusLineNotExistsException(id));
+        if(updateBusLineRequest.getName() != null) {
+            busLine.setName(updateBusLineRequest.getName());
+            this.busLineService.saveBusLine(busLine);
+        }
     }
 
     @DeleteMapping("/busLines/{id}")
     public void removeBusLine(@RequestParam Long busLineId) {
-        //Entfernen einer Buslinie
+        if(this.busLineService.getBusLineById(busLineId).isPresent()) {
+            this.busLineService.deleteBusLineById(busLineId);
+        } else {
+            throw new BusLineNotExistsException(busLineId);
+        }
     }
 
     @GetMapping("/busLines/{id}/busStops")
-    public void getBusStops(@RequestParam Long busLineId) {
-        //Liefert alle Haltestellen einer Buslinie
+    public List<BusStopResponse> getBusStops(@RequestParam Long busLineId) {
+       BusLine busLine = this.busLineService.getBusLineById(busLineId)
+               .orElseThrow(() -> new BusLineNotExistsException(busLineId));
+       List<BusStopInBusLine> busStops = busLine.getBusStops();
+       List<BusStopResponse> busStopResponses = new ArrayList<>();
+       this.modelMapper.map(busStops, busStopResponses);
+       return busStopResponses;
     }
 
     @PostMapping("/busLines/{id}/busStops")
-    public void addBusStop(@RequestParam Long busLineId, @RequestBody String busStop) {
-        //Hinzufügen einer Haltestelle zu einer Buslinie -> Body muss Haltestelle und Fahrzeit enthalten
+    public void addBusStop(@RequestParam Long busLineId, @RequestBody BusStopRequest busStopRequest) {
+        this.busLineService.addBusStop(busLineId, busStopRequest.getId(), busStopRequest.getTimeToNextStop());
     }
 
     @DeleteMapping("/busLines/{busLineId}/busStops/{busStopId}")
     public void removeBusStop(@RequestParam("busLineId") Long busLineId, @RequestParam("busStopId") Long busStopId) {
-        //Entfernen einer Haltestelle von einer Buslinie
+        this.busLineService.removeBusStop(busStopId, busLineId);
     }
 }
