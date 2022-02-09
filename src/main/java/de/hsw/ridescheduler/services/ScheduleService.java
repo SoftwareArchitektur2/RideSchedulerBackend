@@ -13,11 +13,11 @@ import java.util.Optional;
 @Service
 public class ScheduleService {
 
-    private ScheduleRepository scheduleRepository;
+    private final ScheduleRepository scheduleRepository;
 
-    private BusLineService busLineService;
+    private final BusLineService busLineService;
 
-    private BusStopService busStopService;
+    private final BusStopService busStopService;
 
     @Autowired
     public ScheduleService(ScheduleRepository scheduleRepository, BusLineService busLineService, BusStopService busStopService) {
@@ -27,8 +27,8 @@ public class ScheduleService {
     }
 
     public void createSchedule(Long BusLineId, Date departureTime, Long DestinationStopId) {
-        BusLine busline = this.busLineService.getBusLineById(BusLineId);
-        BusStop destinationStop = this.busStopService.getBusStopById(DestinationStopId);
+        BusLine busline = this.busLineService.getBusLineById(BusLineId).orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
+        BusStop destinationStop = this.busStopService.getBusStopById(DestinationStopId).orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
         Schedule schedule = new Schedule(busline, departureTime, destinationStop);
         scheduleRepository.save(schedule);
     }
@@ -36,7 +36,7 @@ public class ScheduleService {
     public void changeDestinationStop(Long id, Long destinationStopId) {
         Optional<Schedule> optionalSchedule = this.scheduleRepository.findById(id);
         Schedule schedule = optionalSchedule.orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
-        schedule.setDestinationStop(this.busStopService.getBusStopById(destinationStopId));
+        schedule.setDestinationStop(this.busStopService.getBusStopById(destinationStopId).orElseThrow(() -> new IllegalArgumentException("BusLine not found")));
         scheduleRepository.save(schedule);
     }
 

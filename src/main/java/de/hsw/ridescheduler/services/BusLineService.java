@@ -29,20 +29,18 @@ public class BusLineService {
         this.busLineRepository.save(new BusLine(busLine));
     }
 
-    public BusLine getBusLineByName(String name) {
-        Optional<BusLine> busLine = this.busLineRepository.findByName(name);
-        return busLine.orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
+    public Optional<BusLine> getBusLineByName(String name) {
+        return this.busLineRepository.findByName(name);
     }
 
-    public BusLine getBusLineById(Long id) {
-        Optional<BusLine> busLine = this.busLineRepository.findById(id);
-        return busLine.orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
+    public Optional<BusLine> getBusLineById(Long id) {
+        return this.busLineRepository.findById(id);
     }
 
     public void addBusStop(Long busStopId, Long busLineId, int timeToNextStop) {
         Optional<BusLine> optionalBusLine = this.busLineRepository.findById(busLineId);
         BusLine busLine = optionalBusLine.orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
-        BusStop busStop = this.busStopService.getBusStopById(busStopId);
+        BusStop busStop = this.busStopService.getBusStopById(busStopId).orElseThrow(() -> new IllegalArgumentException("BusStop not found"));;
         BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
         busLine.addBusStop(busStopInBusLine);
         this.busLineRepository.save(busLine);
@@ -54,6 +52,9 @@ public class BusLineService {
         BusLine busLine = optionalBusLine.orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
         Optional<BusStopInBusLine> optionalBusStopInBusLine = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId);
         BusStopInBusLine busStopInBusLine = optionalBusStopInBusLine.orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
+        if(this.isBusStopLastOrFirst(busStopInBusLine)) {
+            throw new IllegalArgumentException("BusStop is last or first");
+        }
         busLine.removeBusStop(busStopInBusLine);
         this.busStopService.removeBusLine(busStopId, busStopInBusLine);
     }

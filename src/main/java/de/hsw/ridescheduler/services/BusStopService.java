@@ -28,12 +28,12 @@ public class BusStopService {
             return this.busStopRepository.findAll();
     }
 
-    public BusStop getBusStopByName(String name) {
+    public Optional<BusStop> getBusStopByName(String name) {
         return this.busStopRepository.findByName(name);
     }
 
-    public BusStop getBusStopById(Long id) {
-        return this.busStopRepository.findById(id).get();
+    public Optional<BusStop> getBusStopById(Long id) {
+        return this.busStopRepository.findById(id);
     }
 
     public void changeName(Long id, String name) {
