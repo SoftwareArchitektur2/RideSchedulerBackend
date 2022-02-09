@@ -3,6 +3,7 @@ package de.hsw.ridescheduler.services;
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.repositorys.BusStopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,11 @@ public class BusStopService {
         this.busStopRepository = busStopRepository;
     }
 
-    public void saveBusStop(String name, Boolean hasWifi) {
-        this.busStopRepository.save(new BusStop(name, hasWifi));
+    public void saveBusStop(BusStop busStop) {
+        if(this.busStopRepository.existsByName(busStop.getName())) {
+            throw new BusStopAlreadyExistsException(busStop.getName());
+        }
+        this.busStopRepository.save(busStop);
     }
 
     public List<BusStop> getAllBusStops() {

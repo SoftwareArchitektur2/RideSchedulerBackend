@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface BusStopRepository extends JpaRepository<BusStop, Long> {
     Optional<BusStop> findByName(String name);
+
+    boolean existsByName(String name);
 }

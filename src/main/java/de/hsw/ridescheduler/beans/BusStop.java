@@ -3,6 +3,7 @@ package de.hsw.ridescheduler.beans;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class BusStop {
@@ -67,5 +68,18 @@ public class BusStop {
 
     public void setHasWifi(Boolean hasWifi) {
         this.hasWifi = hasWifi;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BusStop busStop = (BusStop) o;
+        return id.equals(busStop.id) && name.equals(busStop.name) && Objects.equals(hasWifi, busStop.hasWifi) && Objects.equals(busLines, busStop.busLines);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, hasWifi, busLines);
     }
 }
