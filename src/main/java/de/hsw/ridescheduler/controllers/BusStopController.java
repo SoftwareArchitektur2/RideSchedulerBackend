@@ -2,6 +2,7 @@ package de.hsw.ridescheduler.controllers;
 
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.dtos.AddBusStopRequest;
+import de.hsw.ridescheduler.dtos.UpdateBusStopRequest;
 import de.hsw.ridescheduler.services.BusStopService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,13 @@ public class BusStopController {
     }
 
     @PatchMapping("/busStops/{id}")
-    public void updateBusStop(@PathVariable("id") Long id, @RequestBody String busStop) {
-        //Aktualisieren eines Busstops mit id aus dem Path und neuem Namen dem Body
+    public void updateBusStop(@PathVariable("id") Long id, @RequestBody UpdateBusStopRequest updateBusStopRequest) {
+        if(updateBusStopRequest.getName() != null) {
+            this.busStopService.changeName(id, updateBusStopRequest.getName());
+        }
+        if(updateBusStopRequest.getHasWifi() != null) {
+            this.busStopService.changeHasWifi(id, updateBusStopRequest.getHasWifi());
+        }
     }
 
     @DeleteMapping("/busStops/{id}")
