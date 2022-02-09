@@ -47,8 +47,8 @@ public class BusLineController {
         //Hinzufügen einer Haltestelle zu einer Buslinie -> Body muss Haltestelle und Fahrzeit enthalten
     }
 
-    @DeleteMapping("/busLines/{id}/busStops/{id}")
-    public void removeBusStop(@RequestParam Long busLineId, @RequestParam Long busStopId) {
+    @DeleteMapping("/busLines/{busLineId}/busStops/{busStopId}")
+    public void removeBusStop(@RequestParam("busLineId") Long busLineId, @RequestParam("busStopId") Long busStopId) {
         //Entfernen einer Haltestelle von einer Buslinie
     }
 }
