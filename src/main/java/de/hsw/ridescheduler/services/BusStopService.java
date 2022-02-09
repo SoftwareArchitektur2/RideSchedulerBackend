@@ -41,6 +41,9 @@ public class BusStopService {
     }
 
     public void changeName(Long id, String name) {
+        if(this.busStopRepository.findByName(name).isPresent()) {
+            throw new BusStopAlreadyExistsException(name);
+        }
         BusStop busStop = this.busStopRepository.findById(id).get();
         busStop.setName(name);
         busStopRepository.save(busStop);
