@@ -65,12 +65,7 @@ public class BusLineController {
 
     @GetMapping("/busLines/{id}/busStops")
     public List<BusStopResponse> getBusStops(@RequestParam Long busLineId) {
-       BusLine busLine = this.busLineService.getBusLineById(busLineId)
-               .orElseThrow(() -> new BusLineNotExistsException(busLineId));
-       List<BusStopInBusLine> busStops = busLine.getBusStops();
-       List<BusStopResponse> busStopResponses = new ArrayList<>();
-       this.modelMapper.map(busStops, busStopResponses);
-       return busStopResponses;
+       return this.busLineService.getAllBusStops(busLineId);
     }
 
     @PostMapping("/busLines/{id}/busStops")

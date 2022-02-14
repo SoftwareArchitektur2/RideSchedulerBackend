@@ -3,14 +3,18 @@ package de.hsw.ridescheduler.services;
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.dtos.BusStopResponse;
 import de.hsw.ridescheduler.exceptions.BusLineAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusLineRepository;
 import de.hsw.ridescheduler.repositorys.BusStopInBusLineRepository;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +50,19 @@ public class BusLineService {
 
     public Optional<BusLine> getBusLineById(Long id) {
         return this.busLineRepository.findById(id);
+    }
+
+    public List<BusStopResponse> getAllBusStops(Long busLineId) {
+        BusLine busLine = this.busLineRepository
+                .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        List<BusStopResponse> result = new ArrayList<>(busLine.getBusStops().size());
+        Date currentTime = new Date();
+
+        for (BusStopInBusLine busStopInBusLine : busLine.getBusStops()) {
+            result.add(new BusStopResponse(busStopInBusLine, currentTime));
+            currentTime = DateUtils.addMinutes(currentTime, busStopInBusLine.getTimeToNextStop());
+        }
+        return result;
     }
 
     public void addBusStop(Long busStopId, Long busLineId, int timeToNextStop) {
