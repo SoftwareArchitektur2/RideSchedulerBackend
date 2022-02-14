@@ -1,9 +1,11 @@
 package de.hsw.ridescheduler.beans;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Date;
 
 @Entity
+@Table(name = "schedule")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +17,7 @@ public class Schedule {
     private BusLine busLine;
 
     @Column(name = "departuretime", nullable = false)
-    private Date departureTime;
+    private Time departureTime;
 
     @OneToOne
     @JoinColumn(name = "busstop_id", nullable = false)
@@ -25,7 +27,7 @@ public class Schedule {
 
     }
 
-    public Schedule(BusLine busLine, Date departureTime, BusStop destinationStop) {
+    public Schedule(BusLine busLine, Time departureTime, BusStop destinationStop) {
         this.busLine = busLine;
         this.departureTime = departureTime;
         this.destinationStop = destinationStop;
@@ -51,7 +53,7 @@ public class Schedule {
         return departureTime;
     }
 
-    public void setDepartureTime(Date departureTime) {
+    public void setDepartureTime(Time departureTime) {
         this.departureTime = departureTime;
     }
 

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.util.*;
 
 @Service
@@ -67,7 +68,7 @@ public class ScheduleService {
         return result;
     }
 
-    public void createSchedule(Long BusLineId, Date departureTime, Long DestinationStopId) {
+    public void createSchedule(Long BusLineId, Time departureTime, Long DestinationStopId) {
         BusLine busline = this.busLineService.getBusLineById(BusLineId).orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
         BusStop destinationStop = this.busStopService.getBusStopById(DestinationStopId).orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
         Schedule schedule = new Schedule(busline, departureTime, destinationStop);

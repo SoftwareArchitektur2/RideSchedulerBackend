@@ -1,17 +1,17 @@
 package de.hsw.ridescheduler.dtos;
 
-import java.util.Date;
+import java.sql.Time;
 
 public class AddScheduleRequest {
 
     private Long busLineId;
-    private Date departureTime;
+    private Time departureTime;
     private Long destinationStopId;
 
     public AddScheduleRequest() {
     }
 
-    public AddScheduleRequest(Long busLineId, Date departureTime, Long destinationStopId) {
+    public AddScheduleRequest(Long busLineId, Time departureTime, Long destinationStopId) {
         this.busLineId = busLineId;
         this.departureTime = departureTime;
         this.destinationStopId = destinationStopId;
@@ -25,11 +25,11 @@ public class AddScheduleRequest {
         this.busLineId = busLineId;
     }
 
-    public Date getDepartureTime() {
+    public Time getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(Date departureTime) {
+    public void setDepartureTime(Time departureTime) {
         this.departureTime = departureTime;
     }
 

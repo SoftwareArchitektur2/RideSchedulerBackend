@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "bus_line")
 public class BusLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
