@@ -1,5 +1,7 @@
 package de.hsw.ridescheduler.beans;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class BusStop {
     @Column(name = "hasWifi", nullable = true)
     private Boolean hasWifi;
 
-    @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "busStop", cascade = CascadeType.ALL)
     private List<BusStopInBusLine> busLines = new ArrayList<>();
 
     public BusStop() {

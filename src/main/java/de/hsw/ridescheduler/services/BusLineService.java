@@ -4,14 +4,17 @@ import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.dtos.BusStopResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusLineAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusLineRepository;
 import de.hsw.ridescheduler.repositorys.BusStopInBusLineRepository;
 import org.apache.commons.lang3.time.DateUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,16 +26,19 @@ public class BusLineService {
 
     private BusLineRepository busLineRepository;
     private BusStopInBusLineRepository busStopInBusLineRepository;
+    private ModelMapper modelMapper;
 
     private BusStopService busStopService;
 
     @Autowired
-    public BusLineService(BusLineRepository busLineRepository, BusStopInBusLineRepository busStopInBusLineRepository, BusStopService busStopService) {
+    public BusLineService(BusLineRepository busLineRepository, BusStopInBusLineRepository busStopInBusLineRepository, BusStopService busStopService, ModelMapper modelMapper) {
         this.busLineRepository = busLineRepository;
         this.busStopInBusLineRepository = busStopInBusLineRepository;
         this.busStopService = busStopService;
+        this.modelMapper = modelMapper;
     }
 
+    @Transactional
     public void saveBusLine(BusLine busLine) {
         if(this.busLineRepository.findByName(busLine.getName()).isPresent()) {
             throw new BusLineAlreadyExistsException(busLine.getName());
@@ -52,6 +58,7 @@ public class BusLineService {
         return this.busLineRepository.findById(id);
     }
 
+    @Transactional
     public List<BusStopResponse> getAllBusStops(Long busLineId) {
         BusLine busLine = this.busLineRepository
                 .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
@@ -62,6 +69,15 @@ public class BusLineService {
             result.add(new BusStopResponse(busStopInBusLine, currentTime));
             currentTime = DateUtils.addMinutes(currentTime, busStopInBusLine.getTimeToNextStop());
         }
+        return result;
+    }
+
+    @Transactional
+    public List<ScheduleResponse> getAllSchedules(Long busLineId) {
+        BusLine busLine = this.busLineRepository
+                .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        List<ScheduleResponse> result = new ArrayList<>(busLine.getBusStops().size());
+        busLine.getSchedules().forEach(schedule -> result.add(modelMapper.map(schedule, ScheduleResponse.class)));
         return result;
     }
 
@@ -103,6 +119,7 @@ public class BusLineService {
         this.busLineRepository.save(busLine);
     }
 
+    @Transactional
     public void deleteBusLineById(Long busLineId) {
         Optional<BusLine> optionalBusLine = this.busLineRepository.findById(busLineId);
         BusLine busLine = optionalBusLine.orElseThrow(() -> new BusLineNotExistsException(busLineId));

@@ -13,6 +13,9 @@ INSERT INTO bus_stop (name, has_wifi) VALUES ('Münster Dingbängerweg', false);
 INSERT INTO bus_line (name) VALUES ('StadtBus 15');
 INSERT INTO bus_line (name) VALUES ('StadtBus 16');
 
+INSERT INTO schedule (busline_id, departuretime, busstop_id) VALUES (0, '08:00:00', 10);
+INSERT INTO schedule (busline_id, departuretime, busstop_id) VALUES (0, '08:10:00', 0);
+
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (0, 0, 2);
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (1, 0, 1);
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (2, 0, 2);
@@ -32,5 +35,3 @@ INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) V
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (9, 1, 1);
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (10, 1, 1);
 
-INSERT INTO schedule (busline_id, departuretime, busstop_id) VALUES (0, '08:00:00', 10);
-INSERT INTO schedule (busline_id, departuretime, busstop_id) VALUES (0, '08:10:00', 0);

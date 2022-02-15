@@ -1,13 +1,18 @@
 package de.hsw.ridescheduler.services;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.dtos.BusLineResponse;
+import de.hsw.ridescheduler.dtos.BusStopResponse;
 import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopHasBusLinesException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusStopRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,12 +20,15 @@ import java.util.Optional;
 public class BusStopService {
 
     private BusStopRepository busStopRepository;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public BusStopService(BusStopRepository busStopRepository) {
+    public BusStopService(BusStopRepository busStopRepository, ModelMapper modelMapper) {
         this.busStopRepository = busStopRepository;
+        this.modelMapper = modelMapper;
     }
 
+    @Transactional
     public void saveBusStop(BusStop busStop) {
         if (this.busStopRepository.existsByName(busStop.getName())) {
             throw new BusStopAlreadyExistsException(busStop.getName());
@@ -67,6 +75,16 @@ public class BusStopService {
         busStop.removeBusLine(busLine);
     }
 
+    @Transactional
+    public List<BusLineResponse> getBusLinesForBusStop(Long id) {
+        BusStop busStop = busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
+        List<BusStopInBusLine> busLines = busStop.getBusLines();
+        List<BusLineResponse> responses = new ArrayList<>(busLines.size());
+        busLines.forEach(busLine -> responses.add(new BusLineResponse(busLine.getBusLine().getId(), busLine.getBusLine().getName())));
+        return responses;
+    }
+
+    @Transactional
     public void deleteBusStopById(Long id) {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
         BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));

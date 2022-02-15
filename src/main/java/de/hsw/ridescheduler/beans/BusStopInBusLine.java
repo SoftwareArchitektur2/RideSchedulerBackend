@@ -19,7 +19,7 @@ public class BusStopInBusLine {
     private BusLine busLine;
 
     @Column(name = "timeToNextStop", nullable = false)
-    private int timeToNextStop;
+    private Integer timeToNextStop;
 
     public BusStopInBusLine() {
     }
@@ -54,11 +54,11 @@ public class BusStopInBusLine {
         this.busLine = busLine;
     }
 
-    public int getTimeToNextStop() {
+    public Integer getTimeToNextStop() {
         return timeToNextStop;
     }
 
-    public void setTimeToNextStop(int timeToNextStop) {
+    public void setTimeToNextStop(Integer timeToNextStop) {
         this.timeToNextStop = timeToNextStop;
     }
 }

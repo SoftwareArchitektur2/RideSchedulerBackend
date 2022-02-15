@@ -15,11 +15,11 @@ public class BusLine {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "busLine", cascade = CascadeType.MERGE)
-    private List<Schedule> schedules;
+    @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL)
+    private List<Schedule> schedules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "busStop", cascade = CascadeType.MERGE)
-    private List<BusStopInBusLine> busStops = new ArrayList<>(0);
+    @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL)
+    private List<BusStopInBusLine> busStops = new ArrayList<>();
 
     public BusLine() {
     }
