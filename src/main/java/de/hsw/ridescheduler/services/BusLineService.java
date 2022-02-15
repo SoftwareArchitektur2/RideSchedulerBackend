@@ -81,6 +81,7 @@ public class BusLineService {
         return result;
     }
 
+    @Transactional
     public void addBusStop(Long busStopId, Long busLineId, int timeToNextStop) {
         BusLine busLine = this.busLineRepository.findById(busLineId)
                 .orElseThrow(() -> new BusLineNotExistsException(busLineId));
