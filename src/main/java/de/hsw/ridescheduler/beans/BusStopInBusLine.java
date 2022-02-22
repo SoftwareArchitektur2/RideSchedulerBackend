@@ -3,7 +3,7 @@ package de.hsw.ridescheduler.beans;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "bus_stop_in_bus_line")
+@Table(name = "bus_stop_in_bus_line", schema = "ridescheduler")
 public class BusStopInBusLine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

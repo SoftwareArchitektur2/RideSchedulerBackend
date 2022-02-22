@@ -42,9 +42,9 @@ public class BusLineServiceTests {
     @Test
     public void testAddBusLine() {
         BusLine busLine = new BusLine("TestBusLine");
-        this.busLineService.saveBusLine(busLine);
+        BusLine busLine2 = this.busLineService.saveBusLine(busLine);
         assertEquals(3, this.busLineService.getAllBusLines().size());
-        this.busLineService.deleteBusLineById(2L);
+        this.busLineService.deleteBusLineById(busLine2.getId());
     }
 
     @Test

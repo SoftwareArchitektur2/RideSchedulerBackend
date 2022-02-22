@@ -5,7 +5,7 @@ import java.sql.Time;
 import java.util.Date;
 
 @Entity
-@Table(name = "schedule")
+@Table(name = "schedule", schema = "ridescheduler")
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -34,4 +34,3 @@ INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) V
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (8, 1, 1);
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (9, 1, 1);
 INSERT INTO bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (10, 1, 1);
-

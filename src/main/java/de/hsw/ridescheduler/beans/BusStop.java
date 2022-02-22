@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "bus_stop")
+@Table(name = "bus_stop", schema = "ridescheduler")
 public class BusStop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

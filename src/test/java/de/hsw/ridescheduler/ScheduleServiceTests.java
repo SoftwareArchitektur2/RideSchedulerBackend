@@ -39,30 +39,30 @@ public class ScheduleServiceTests {
     @Test
     public void testCreateAndDeleteSchedule() {
         BusStop a = new BusStop("A", true);
-        this.busStopService.saveBusStop(a);
+        BusStop a1 = this.busStopService.saveBusStop(a);
         BusStop b = new BusStop("B", true);
-        this.busStopService.saveBusStop(b);
+        BusStop a2 = this.busStopService.saveBusStop(b);
         BusStop c = new BusStop("C", true);
-        this.busStopService.saveBusStop(c);
+        BusStop a3 = this.busStopService.saveBusStop(c);
         BusStop d = new BusStop("D", true);
-        this.busStopService.saveBusStop(d);
+        BusStop a4 = this.busStopService.saveBusStop(d);
         BusLine busLine = new BusLine("Line15");
-        this.busLineService.saveBusLine(busLine);
+        BusLine b1 = this.busLineService.saveBusLine(busLine);
         this.busLineService.addBusStop(0L, 2L, 1);
         this.busLineService.addBusStop(1L, 2L, 2);
         this.busLineService.addBusStop(2L, 2L, 3);
         this.busLineService.addBusStop(3L, 2L, 4);
 
         assertEquals(2, this.scheduleService.getAllSchedules().size());
-        this.scheduleService.createSchedule(0L, new Time(26000000L), 3L);
+        Schedule c1 = this.scheduleService.createSchedule(0L, new Time(26000000L), 3L);
         assertEquals(3, this.scheduleService.getAllSchedules().size());
 
-        this.scheduleService.deleteScheduleById(2L);
-        this.busStopService.deleteBusStopById(11L);
-        this.busStopService.deleteBusStopById(12L);
-        this.busStopService.deleteBusStopById(13L);
-        this.busStopService.deleteBusStopById(14L);
-        this.busLineService.deleteBusLineById(2L);
+        this.scheduleService.deleteScheduleById(c1.getId());
+        this.busStopService.deleteBusStopById(a1.getId());
+        this.busStopService.deleteBusStopById(a2.getId());
+        this.busStopService.deleteBusStopById(a3.getId());
+        this.busStopService.deleteBusStopById(a4.getId());
+        this.busLineService.deleteBusLineById(b1.getId());
         assertEquals(2, this.scheduleService.getAllSchedules().size());
     }
 
