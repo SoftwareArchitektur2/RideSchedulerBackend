@@ -2,11 +2,10 @@ package de.hsw.ridescheduler;
 
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
-import de.hsw.ridescheduler.dtos.BusStopResponse;
+import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.repositorys.BusStopInBusLineRepository;
 import de.hsw.ridescheduler.services.BusLineService;
-import de.hsw.ridescheduler.services.BusStopService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,7 +63,7 @@ public class BusLineServiceTests {
 
     @Test
     public void testGetAllBusStopsForBusLine() {
-        List<BusStopResponse> busStops = this.busLineService.getAllBusStops(0L);
+        List<BusStopInBusLineResponse> busStops = this.busLineService.getAllBusStops(0L);
         assertEquals(11, busStops.size());
     }
 

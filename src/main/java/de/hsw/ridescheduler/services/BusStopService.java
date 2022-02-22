@@ -2,7 +2,6 @@ package de.hsw.ridescheduler.services;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
-import de.hsw.ridescheduler.dtos.BusStopResponse;
 import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopHasBusLinesException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
@@ -29,11 +28,12 @@ public class BusStopService {
     }
 
     @Transactional
-    public void saveBusStop(BusStop busStop) {
+    public BusStop saveBusStop(BusStop busStop) {
         if (this.busStopRepository.existsByName(busStop.getName())) {
             throw new BusStopAlreadyExistsException(busStop.getName());
         }
         this.busStopRepository.save(busStop);
+        return busStop;
     }
 
     public List<BusStop> getAllBusStops() {

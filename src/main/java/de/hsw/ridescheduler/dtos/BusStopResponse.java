@@ -1,39 +1,26 @@
 package de.hsw.ridescheduler.dtos;
 
-import de.hsw.ridescheduler.beans.BusStop;
-import de.hsw.ridescheduler.beans.BusStopInBusLine;
-
-import java.util.Date;
-
 public class BusStopResponse {
 
+    private Long id;
     private String name;
     private Boolean hasWifi;
-    private int timeToNextStop;
-    private Date arrivalTime;
 
     public BusStopResponse() {
     }
 
-    public BusStopResponse(String name, Boolean hasWifi, int timeToNextStop) {
+    public BusStopResponse(Long id, String name, Boolean hasWifi) {
+        this.id = id;
         this.name = name;
         this.hasWifi = hasWifi;
-        this.timeToNextStop = timeToNextStop;
     }
 
-    public BusStopResponse(String name, Boolean hasWifi, int timeToNextStop, Date arrivalTime) {
-        this.name = name;
-        this.hasWifi = hasWifi;
-        this.timeToNextStop = timeToNextStop;
-        this.arrivalTime = arrivalTime;
+    public Long getId() {
+        return id;
     }
 
-    public BusStopResponse(BusStopInBusLine busStop, Date arrivalTime) {
-        BusStop bs = busStop.getBusStop();
-        this.name = bs.getName();
-        this.hasWifi = bs.getHasWifi();
-        this.timeToNextStop = busStop.getTimeToNextStop();
-        this.arrivalTime = new Date(arrivalTime.getTime());
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -50,21 +37,5 @@ public class BusStopResponse {
 
     public void setHasWifi(Boolean hasWifi) {
         this.hasWifi = hasWifi;
-    }
-
-    public int getTimeToNextStop() {
-        return timeToNextStop;
-    }
-
-    public void setTimeToNextStop(int timeToNextStop) {
-        this.timeToNextStop = timeToNextStop;
-    }
-
-    public Date getArrivalTime() {
-        return arrivalTime;
-    }
-
-    public void setArrivalTime(Date arrivalTime) {
-        this.arrivalTime = arrivalTime;
     }
 }

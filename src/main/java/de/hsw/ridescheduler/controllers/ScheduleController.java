@@ -2,13 +2,14 @@ package de.hsw.ridescheduler.controllers;
 
 import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.AddScheduleRequest;
-import de.hsw.ridescheduler.dtos.BusStopResponse;
+import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.ScheduleNotExistsException;
 import de.hsw.ridescheduler.services.ScheduleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +26,11 @@ public class ScheduleController {
         this.modelMapper = modelMapper;
     }
 
-    @PostMapping("/schedules")
-    public void addSchedule(@RequestBody AddScheduleRequest addScheduleRequest) {
-        this.scheduleService.createSchedule(addScheduleRequest.getBusLineId(), addScheduleRequest.getDepartureTime(), addScheduleRequest.getDestinationStopId());
+    @PostMapping("/schedules/")
+    public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody AddScheduleRequest addScheduleRequest) {
+        return new ResponseEntity<ScheduleResponse>(this.modelMapper.map(
+                this.scheduleService.createSchedule(addScheduleRequest.getBusLineId(), addScheduleRequest.getDepartureTime(), addScheduleRequest.getDestinationStopId())
+                , ScheduleResponse.class), HttpStatus.CREATED);
     }
 
     @GetMapping("/schedules/{id}")
@@ -37,12 +40,12 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/schedules/{id}")
-    public void deleteSchedule(@RequestParam Long id) {
+    public void deleteSchedule(@PathVariable Long id) {
         this.scheduleService.deleteScheduleById(id);
     }
 
-    @GetMapping("schedules/{scheduleId}/busStops/{busStopId}")
-    public List<BusStopResponse> getBusStops(@PathVariable("scheduleId") Long scheduleId, @PathVariable("busStopId") Long busStopId) {
+    @GetMapping("/schedules/{scheduleId}/busStops/{busStopId}")
+    public List<BusStopInBusLineResponse> getBusStops(@PathVariable("scheduleId") Long scheduleId, @PathVariable("busStopId") Long busStopId) {
         return this.scheduleService.getBusStops(scheduleId, busStopId);
     }
 }

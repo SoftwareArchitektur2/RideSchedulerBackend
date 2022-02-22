@@ -7,24 +7,24 @@ import java.util.Date;
 
 public class ScheduleResponse {
 
-    private BusLine busLine;
+    private BusLineResponse busLine;
     private Date departureTime;
-    private BusStop destinationStop;
+    private BusStopInBusLineResponse destinationStop;
 
     public ScheduleResponse() {
     }
 
-    public ScheduleResponse(BusLine busLine, Date departureTime, BusStop destinationStop) {
+    public ScheduleResponse(BusLineResponse busLine, Date departureTime, BusStopInBusLineResponse destinationStop) {
         this.busLine = busLine;
         this.departureTime = departureTime;
         this.destinationStop = destinationStop;
     }
 
-    public BusLine getBusLine() {
+    public BusLineResponse getBusLine() {
         return busLine;
     }
 
-    public void setBusLine(BusLine busLine) {
+    public void setBusLine(BusLineResponse busLine) {
         this.busLine = busLine;
     }
 
@@ -36,11 +36,11 @@ public class ScheduleResponse {
         this.departureTime = departureTime;
     }
 
-    public BusStop getDestinationStop() {
+    public BusStopInBusLineResponse getDestinationStop() {
         return destinationStop;
     }
 
-    public void setDestinationStop(BusStop destinationStop) {
+    public void setDestinationStop(BusStopInBusLineResponse destinationStop) {
         this.destinationStop = destinationStop;
     }
 }

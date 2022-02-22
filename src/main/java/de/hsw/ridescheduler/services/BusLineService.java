@@ -3,7 +3,7 @@ package de.hsw.ridescheduler.services;
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
-import de.hsw.ridescheduler.dtos.BusStopResponse;
+import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusLineAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BusLineService {
@@ -39,11 +40,12 @@ public class BusLineService {
     }
 
     @Transactional
-    public void saveBusLine(BusLine busLine) {
+    public BusLine saveBusLine(BusLine busLine) {
         if(this.busLineRepository.findByName(busLine.getName()).isPresent()) {
             throw new BusLineAlreadyExistsException(busLine.getName());
         }
         this.busLineRepository.save(busLine);
+        return busLine;
     }
 
     public List<BusLine> getAllBusLines() {
@@ -59,14 +61,14 @@ public class BusLineService {
     }
 
     @Transactional
-    public List<BusStopResponse> getAllBusStops(Long busLineId) {
+    public List<BusStopInBusLineResponse> getAllBusStops(Long busLineId) {
         BusLine busLine = this.busLineRepository
                 .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
-        List<BusStopResponse> result = new ArrayList<>(busLine.getBusStops().size());
+        List<BusStopInBusLineResponse> result = new ArrayList<>(busLine.getBusStops().size());
         Date currentTime = new Date();
 
         for (BusStopInBusLine busStopInBusLine : busLine.getBusStops()) {
-            result.add(new BusStopResponse(busStopInBusLine, currentTime));
+            result.add(new BusStopInBusLineResponse(busStopInBusLine, currentTime));
             currentTime = DateUtils.addMinutes(currentTime, busStopInBusLine.getTimeToNextStop());
         }
         return result;
@@ -76,9 +78,7 @@ public class BusLineService {
     public List<ScheduleResponse> getAllSchedules(Long busLineId) {
         BusLine busLine = this.busLineRepository
                 .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
-        List<ScheduleResponse> result = new ArrayList<>(busLine.getBusStops().size());
-        busLine.getSchedules().forEach(schedule -> result.add(modelMapper.map(schedule, ScheduleResponse.class)));
-        return result;
+        return busLine.getSchedules().stream().map(schedule -> this.modelMapper.map(schedule, ScheduleResponse.class)).collect(Collectors.toList());
     }
 
     @Transactional
@@ -104,7 +104,6 @@ public class BusLineService {
             throw new IllegalArgumentException("BusStop is last or first");
         }
         busLine.removeBusStop(busStopInBusLine);
-        this.busStopService.removeBusLine(busStopId, busStopInBusLine);
     }
 
     private Boolean isBusStopLastOrFirst(BusStopInBusLine busStopInBusLine) {
