@@ -2,6 +2,7 @@ package de.hsw.ridescheduler.dtos;
 
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
+import de.hsw.ridescheduler.beans.Schedule;
 
 import java.util.Date;
 

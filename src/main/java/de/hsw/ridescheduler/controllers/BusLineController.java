@@ -68,6 +68,11 @@ public class BusLineController {
        return this.busLineService.getAllBusStops(id);
     }
 
+    @GetMapping("/busLines/{id}/destinationStops")
+    public List<BusStopResponse> getDestinationStops(@PathVariable Long id) {
+        return this.busLineService.getDestinationStops(id);
+    }
+
     @PostMapping("/busLines/{id}/busStops")
     public void addBusStop(@PathVariable Long id, @RequestBody BusStopRequest busStopRequest) {
         this.busLineService.addBusStop(id, busStopRequest.getId(), busStopRequest.getTimeToNextStop());
@@ -76,6 +81,11 @@ public class BusLineController {
     @GetMapping("busLines/{id}/schedules")
     public List<ScheduleResponse> getSchedules(@PathVariable Long id) {
         return this.busLineService.getAllSchedules(id);
+    }
+
+    @GetMapping("/busLines/{id}/schedules/{busStopId}")
+    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable Long id, @PathVariable Long busStopId) {
+        return this.busLineService.getSchedulesForBusStop(id, busStopId);
     }
 
     @DeleteMapping("/busLines/{busLineId}/busStops/{busStopId}")

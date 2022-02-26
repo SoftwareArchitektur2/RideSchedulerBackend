@@ -37,6 +37,11 @@ public class BusStopController {
     public BusStopResponse getBusStopById(@PathVariable("id") Long id) {
         return modelMapper.map(this.busStopService.getBusStopById(id).orElseThrow(() -> new BusStopNotExistsException(id)), BusStopResponse.class);
     }
+    
+    @GetMapping("/busStops/{id}/busLines")
+    public List<BusLineResponse> getBusLinesForBusStop(@PathVariable("id") Long id) {
+        return this.busStopService.getBusLinesForBusStop(id);
+    }
 
     @PostMapping("/busStops/")
     public ResponseEntity<BusStopResponse> addBusStop(@RequestBody AddBusStopRequest addBusStopRequest) {

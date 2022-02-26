@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BusStopService {
@@ -67,21 +68,23 @@ public class BusStopService {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
         BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
         busStop.addBusLine(busLine);
+        this.busStopRepository.save(busStop);
     }
 
     public void removeBusLine(Long id, BusStopInBusLine busLine) {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
         BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
         busStop.removeBusLine(busLine);
+        this.busStopRepository.save(busStop);
     }
 
     @Transactional
     public List<BusLineResponse> getBusLinesForBusStop(Long id) {
         BusStop busStop = busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
-        List<BusStopInBusLine> busLines = busStop.getBusLines();
-        List<BusLineResponse> responses = new ArrayList<>(busLines.size());
-        busLines.forEach(busLine -> responses.add(new BusLineResponse(busLine.getBusLine().getId(), busLine.getBusLine().getName())));
-        return responses;
+        return busStop.getBusLines()
+                .stream()
+                .map(busLine -> new BusLineResponse(busLine.getBusLine().getId(), busLine.getBusLine().getName()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
