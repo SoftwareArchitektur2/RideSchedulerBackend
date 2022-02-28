@@ -27,9 +27,7 @@ public class RideSchedulerApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/busLines/").allowedOrigins("http://localhost:3000");
-				registry.addMapping("/buStops/").allowedOrigins("http://localhost:3000");
-				registry.addMapping("/schedules/").allowedOrigins("http://localhost:3000");
+				registry.addMapping("/**").allowedOrigins("http://localhost:3000");
 			}
 		};
 	}
