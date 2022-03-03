@@ -151,8 +151,13 @@ public class BusLineService {
     }
 
     public void changeName(Long busLineId, String newName) {
-        Optional<BusLine> optionalBusLine = this.busLineRepository.findById(busLineId);
-        BusLine busLine = optionalBusLine.orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        if(this.busLineRepository.findByName(newName).isPresent()) {
+            throw new BusLineAlreadyExistsException(newName);
+        }
+        if(!this.busLineRepository.existsById(busLineId)) {
+            throw new BusLineNotExistsException(busLineId);
+        }
+        BusLine busLine = this.busLineRepository.getById(busLineId);
         busLine.setName(newName);
         this.busLineRepository.save(busLine);
     }

@@ -53,13 +53,19 @@ public class BusStopService {
         if(this.busStopRepository.findByName(name).isPresent()) {
             throw new BusStopAlreadyExistsException(name);
         }
-        BusStop busStop = this.busStopRepository.findById(id).get();
+        if(!this.busStopRepository.existsById(id)) {
+            throw new BusStopNotExistsException(id);
+        }
+        BusStop busStop = this.busStopRepository.getById(id);
         busStop.setName(name);
         busStopRepository.save(busStop);
     }
 
     public void changeHasWifi(Long id, Boolean hasWifi) {
-        BusStop busStop = this.busStopRepository.findById(id).get();
+        if(!this.busStopRepository.existsById(id)) {
+            throw new BusStopNotExistsException(id);
+        }
+        BusStop busStop = this.busStopRepository.getById(id);
         busStop.setHasWifi(hasWifi);
         busStopRepository.save(busStop);
     }

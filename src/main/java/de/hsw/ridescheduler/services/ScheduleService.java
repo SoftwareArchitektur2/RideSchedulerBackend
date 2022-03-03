@@ -99,8 +99,10 @@ public class ScheduleService {
     }
 
     public void changeDestinationStop(Long scheduleId, Long destinationStopId) {
-        Optional<Schedule> optionalSchedule = this.scheduleRepository.findById(scheduleId);
-        Schedule schedule = optionalSchedule.orElseThrow(() -> new IllegalArgumentException("Schedule not found"));
+        if(!this.scheduleRepository.existsById(scheduleId)) {
+            throw new ScheduleNotExistsException(scheduleId);
+        }
+        Schedule schedule = this.scheduleRepository.getById(scheduleId);
         schedule.setDestinationStop(this.busStopService.getBusStopById(destinationStopId).orElseThrow(() -> new IllegalArgumentException("BusLine not found")));
         scheduleRepository.save(schedule);
     }
