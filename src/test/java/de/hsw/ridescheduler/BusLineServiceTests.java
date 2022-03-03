@@ -35,7 +35,7 @@ public class BusLineServiceTests {
 
     @Test
     public void testGetBusLineById() {
-        BusLine busLine = this.busLineService.getBusLineById(0L).get();
+        BusLine busLine = this.busLineService.getBusLineById(0L);
         assertEquals("StadtBus 15", busLine.getName());
     }
 
@@ -49,9 +49,9 @@ public class BusLineServiceTests {
 
     @Test
     public void testChangeName() {
-        assertEquals("StadtBus 15", this.busLineService.getBusLineById(0L).get().getName());
+        assertEquals("StadtBus 15", this.busLineService.getBusLineById(0L).getName());
         this.busLineService.changeName(0L, "TestBusLine");
-        assertEquals("TestBusLine", this.busLineService.getBusLineById(0L).get().getName());
+        assertEquals("TestBusLine", this.busLineService.getBusLineById(0L).getName());
         this.busLineService.changeName(0L, "StadtBus 15");
     }
 

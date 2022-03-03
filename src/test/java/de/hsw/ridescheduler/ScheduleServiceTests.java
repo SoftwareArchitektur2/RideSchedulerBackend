@@ -4,6 +4,7 @@ import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.services.BusLineService;
 import de.hsw.ridescheduler.services.BusStopService;
 import de.hsw.ridescheduler.services.ScheduleService;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +35,7 @@ public class ScheduleServiceTests {
 
     @Test
     public void testGetScheduleById() {
-        Schedule schedule = this.scheduleService.getScheduleById(0L).get();
+        Schedule schedule = this.scheduleService.getScheduleById(0L);
         assertEquals(new Time(25200000L), schedule.getDepartureTime());
     }
 
@@ -67,12 +70,27 @@ public class ScheduleServiceTests {
     }
 
     @Test
+    public void testGetSchedulesForBusStop() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.set(Calendar.HOUR_OF_DAY,8);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+
+        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(5L, cal.getTime(), 120);
+        assertEquals(4, schedules.size());
+        assertEquals("StadtBus 15", schedules.get(0).getBusLine().getName());
+        assertEquals("StadtBus 16", schedules.get(2).getBusLine().getName());
+    }
+
+    @Test
     public void testChangeDestinationStop() {
-        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).get().getDestinationStop().getName());
+        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
         this.scheduleService.changeDestinationStop(0L, 0L);
-        assertEquals("Münster Geiststraße", this.scheduleService.getScheduleById(0L).get().getDestinationStop().getName());
+        assertEquals("Münster Geiststraße", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
         this.scheduleService.changeDestinationStop(0L, 10L);
-        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).get().getDestinationStop().getName());
+        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
     }
 
     @Test

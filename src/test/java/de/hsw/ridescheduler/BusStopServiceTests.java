@@ -3,12 +3,15 @@ package de.hsw.ridescheduler;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.services.BusStopService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +28,7 @@ public class BusStopServiceTests {
 
     @Test
     public void testGetBusStopById() {
-        assertEquals("Münster Geiststraße", busStopService.getBusStopById(0L).get().getName());
+        assertEquals("Münster Geiststraße", busStopService.getBusStopById(0L).getName());
     }
 
     @Test
@@ -41,7 +44,7 @@ public class BusStopServiceTests {
     @Test
     public void testChangeName() {
         busStopService.changeName(1L, "new Name");
-        assertEquals("new Name", busStopService.getBusStopById(1L).get().getName());
+        assertEquals("new Name", busStopService.getBusStopById(1L).getName());
         busStopService.changeName(1L, "Münster Kolde-Ring /LVM");
     }
 
@@ -49,7 +52,7 @@ public class BusStopServiceTests {
     public void testAddBusStop() {
         BusStop busStop = new BusStop("new BusStop", false);
         busStopService.saveBusStop(busStop);
-        assertEquals("new BusStop", busStopService.getBusStopById(busStop.getId()).get().getName());
+        assertEquals("new BusStop", busStopService.getBusStopById(busStop.getId()).getName());
         busStopService.deleteBusStopById(busStop.getId());
     }
 

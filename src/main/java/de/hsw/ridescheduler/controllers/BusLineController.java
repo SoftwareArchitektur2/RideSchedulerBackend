@@ -46,8 +46,7 @@ public class BusLineController {
 
     @PatchMapping("/busLines/{id}")
     public void updateBusline(@PathVariable("id") Long id, @RequestBody UpdateBusLineRequest updateBusLineRequest) {
-        BusLine busLine = this.busLineService.getBusLineById(id)
-                .orElseThrow(() -> new BusLineNotExistsException(id));
+        BusLine busLine = this.busLineService.getBusLineById(id);
         if(updateBusLineRequest.getName() != null) {
             busLine.setName(updateBusLineRequest.getName());
             this.busLineService.saveBusLine(busLine);
@@ -56,11 +55,8 @@ public class BusLineController {
 
     @DeleteMapping("/busLines/{id}")
     public void removeBusLine(@PathVariable Long busLineId) {
-        if(this.busLineService.getBusLineById(busLineId).isPresent()) {
-            this.busLineService.deleteBusLineById(busLineId);
-        } else {
-            throw new BusLineNotExistsException(busLineId);
-        }
+        this.busLineService.getBusLineById(busLineId);
+        this.busLineService.deleteBusLineById(busLineId);
     }
 
     @GetMapping("/busLines/{id}/busStops")

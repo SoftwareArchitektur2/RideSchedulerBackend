@@ -1,17 +1,23 @@
 package de.hsw.ridescheduler.services;
+import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
+import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopHasBusLinesException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusStopRepository;
+import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,29 +51,23 @@ public class BusStopService {
         return this.busStopRepository.findByName(name);
     }
 
-    public Optional<BusStop> getBusStopById(Long id) {
-        return this.busStopRepository.findById(id);
+    public BusStop getBusStopById(Long id) {
+        return this.busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
     }
 
+    @Transactional
     public void changeName(Long id, String name) {
         if(this.busStopRepository.findByName(name).isPresent()) {
             throw new BusStopAlreadyExistsException(name);
         }
-        if(!this.busStopRepository.existsById(id)) {
-            throw new BusStopNotExistsException(id);
-        }
-        BusStop busStop = this.busStopRepository.getById(id);
+        BusStop busStop = this.getBusStopById(id);
         busStop.setName(name);
-        busStopRepository.save(busStop);
     }
 
+    @Transactional
     public void changeHasWifi(Long id, Boolean hasWifi) {
-        if(!this.busStopRepository.existsById(id)) {
-            throw new BusStopNotExistsException(id);
-        }
-        BusStop busStop = this.busStopRepository.getById(id);
+        BusStop busStop = this.getBusStopById(id);
         busStop.setHasWifi(hasWifi);
-        busStopRepository.save(busStop);
     }
 
     public void addBusLine(Long id, BusStopInBusLine busLine) {
@@ -107,5 +107,4 @@ public class BusStopService {
         }
         busStopRepository.deleteById(id);
     }
-    
 }
