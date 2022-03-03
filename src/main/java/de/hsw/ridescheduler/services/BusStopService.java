@@ -26,13 +26,11 @@ import java.util.stream.Collectors;
 public class BusStopService {
 
     private BusStopRepository busStopRepository;
-    private ScheduleService scheduleService;
     private ModelMapper modelMapper;
 
     @Autowired
-    public BusStopService(BusStopRepository busStopRepository, ScheduleService scheduleService, ModelMapper modelMapper) {
+    public BusStopService(BusStopRepository busStopRepository, ModelMapper modelMapper) {
         this.busStopRepository = busStopRepository;
-        this.scheduleService = scheduleService;
         this.modelMapper = modelMapper;
     }
 
@@ -99,28 +97,6 @@ public class BusStopService {
                 .stream()
                 .map(busLine -> new BusLineResponse(busLine.getBusLine().getId(), busLine.getBusLine().getName()))
                 .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public List<ScheduleResponse> getSchedulesForBusStop(Long id, Date startingTime, Integer duration) {
-        Date endingTime = DateUtils.addMinutes(startingTime, duration);
-        List<ScheduleResponse> result = new ArrayList<>();
-        BusStop busStop = busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
-
-        for(BusStopInBusLine busLine : busStop.getBusLines()) {
-
-            for(Schedule schedule : busLine.getBusLine().getSchedules()) {
-                Date arrivalTime = this.scheduleService.getArrivalTimeForBusStop(schedule, busStop);
-
-                if(arrivalTime.after(startingTime) && arrivalTime.before(endingTime)) {
-                    BusStop destinationStop = schedule.getDestinationStop();
-                    result.add(new ScheduleResponse(this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
-                            , arrivalTime
-                            , new BusStopInBusLineResponse(destinationStop.getId(), destinationStop.getName(), destinationStop.getHasWifi(), 0, null)));
-                }
-            }
-        }
-       return result;
     }
 
     @Transactional

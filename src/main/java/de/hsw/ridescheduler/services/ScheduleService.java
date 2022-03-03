@@ -4,11 +4,14 @@ import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.beans.Schedule;
+import de.hsw.ridescheduler.dtos.BusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.exceptions.ScheduleNotExistsException;
 import de.hsw.ridescheduler.repositorys.ScheduleRepository;
 import org.apache.commons.lang3.time.DateUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +23,16 @@ import java.util.*;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
-
     private final BusLineService busLineService;
-
     private final BusStopService busStopService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository, BusLineService busLineService, BusStopService busStopService) {
+    public ScheduleService(ScheduleRepository scheduleRepository, BusLineService busLineService, BusStopService busStopService, ModelMapper modelMapper) {
         this.scheduleRepository = scheduleRepository;
         this.busLineService = busLineService;
         this.busStopService = busStopService;
+        this.modelMapper = modelMapper;
     }
 
     public List<Schedule> getAllSchedules() {
@@ -96,6 +99,28 @@ public class ScheduleService {
         Date currentTime = this.calculateTodaysDepartureTime(schedule.getDepartureTime());
         currentTime = DateUtils.addMinutes(currentTime, minutesDriven);
         return currentTime;
+    }
+
+    @Transactional
+    public List<ScheduleResponse> getSchedulesForBusStop(Long buStopId, Date startingTime, Integer duration) {
+        Date endingTime = DateUtils.addMinutes(startingTime, duration);
+        List<ScheduleResponse> result = new ArrayList<>();
+        BusStop busStop = this.busStopService.getBusStopById(buStopId);
+
+        for(BusStopInBusLine busLine : busStop.getBusLines()) {
+
+            for(Schedule schedule : busLine.getBusLine().getSchedules()) {
+                Date arrivalTime = this.getArrivalTimeForBusStop(schedule, busStop);
+
+                if(arrivalTime.after(startingTime) && arrivalTime.before(endingTime)) {
+                    BusStop destinationStop = schedule.getDestinationStop();
+                    result.add(new ScheduleResponse(this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
+                            , arrivalTime
+                            , new BusStopInBusLineResponse(destinationStop.getId(), destinationStop.getName(), destinationStop.getHasWifi(), 0, null)));
+                }
+            }
+        }
+        return result;
     }
 
     public Schedule createSchedule(Long BusLineId, Time departureTime, Long DestinationStopId) {

@@ -4,6 +4,7 @@ import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.services.BusLineService;
 import de.hsw.ridescheduler.services.BusStopService;
 import de.hsw.ridescheduler.services.ScheduleService;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Time;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,6 +66,20 @@ public class ScheduleServiceTests {
         this.busStopService.deleteBusStopById(a4.getId());
         this.busLineService.deleteBusLineById(b1.getId());
         assertEquals(2, this.scheduleService.getAllSchedules().size());
+    }
+
+    @Test
+    public void testGetSchedulesForBusStop() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY,14);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+
+        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(5L, cal.getTime(), 120);
+        assertEquals(2, schedules.size());
+        assertEquals("StadtBus 15", schedules.get(0).getBusLine().getName());
+        assertEquals("StadtBus 16", schedules.get(1).getBusLine().getName());
     }
 
     @Test

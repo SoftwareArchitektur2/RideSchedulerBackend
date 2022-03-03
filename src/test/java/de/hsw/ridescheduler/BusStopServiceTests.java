@@ -63,20 +63,6 @@ public class BusStopServiceTests {
         assertEquals("StadtBus 15", busLines.get(0).getName());
         assertEquals("StadtBus 16", busLines.get(1).getName());
     }
-
-    @Test
-    public void testGetSchedulesForBusStop() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY,14);
-        cal.set(Calendar.MINUTE,30);
-        cal.set(Calendar.SECOND,0);
-        cal.set(Calendar.MILLISECOND,0);
-
-        List<ScheduleResponse> schedules = busStopService.getSchedulesForBusStop(5L, cal.getTime(), 120);
-        assertEquals(2, schedules.size());
-        assertEquals("StadtBus 15", schedules.get(0).getBusLine().getName());
-        assertEquals("StadtBus 16", schedules.get(1).getBusLine().getName());
-    }
 }
 
 

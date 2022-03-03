@@ -4,6 +4,7 @@ import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.dtos.*;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.services.BusStopService;
+import de.hsw.ridescheduler.services.ScheduleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,11 +20,13 @@ import java.util.stream.Collectors;
 public class BusStopController {
 
     private BusStopService busStopService;
+    private ScheduleService scheduleService;
     private ModelMapper modelMapper;
 
     @Autowired
-    public BusStopController(BusStopService busStopService, ModelMapper modelMapper) {
+    public BusStopController(BusStopService busStopService, ScheduleService scheduleService, ModelMapper modelMapper) {
         this.busStopService = busStopService;
+        this.scheduleService = scheduleService;
         this.modelMapper = modelMapper;
     }
 
@@ -48,7 +51,7 @@ public class BusStopController {
     @GetMapping("/busStops/{id}/schedules")
     public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime")
     @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date startingTime, @RequestParam("duration") Integer duration) {
-        return this.busStopService.getSchedulesForBusStop(id, startingTime, duration);
+        return this.scheduleService.getSchedulesForBusStop(id, startingTime, duration);
     }
 
     @PostMapping("/busStops/")
