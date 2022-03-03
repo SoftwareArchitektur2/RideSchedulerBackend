@@ -55,12 +55,12 @@ public class BusLineService {
         return this.busLineRepository.findAll();
     }
 
-    public Optional<BusLine> getBusLineByName(String name) {
-        return this.busLineRepository.findByName(name);
+    public BusLine getBusLineByName(String name) {
+        return this.busLineRepository.findByName(name).orElseThrow(() -> new BusLineNotExistsException(name));
     }
 
-    public Optional<BusLine> getBusLineById(Long id) {
-        return this.busLineRepository.findById(id);
+    public BusLine getBusLineById(Long id) {
+        return this.busLineRepository.findById(id).orElseThrow(() -> new BusLineNotExistsException(id));
     }
 
     @Transactional
@@ -121,10 +121,8 @@ public class BusLineService {
 
     @Transactional
     public void addBusStop(Long busStopId, Long busLineId, int timeToNextStop) {
-        BusLine busLine = this.busLineRepository.findById(busLineId)
-                .orElseThrow(() -> new BusLineNotExistsException(busLineId));
-        BusStop busStop = this.busStopService.getBusStopById(busStopId)
-                .orElseThrow(() -> new BusStopNotExistsException(busStopId));
+        BusLine busLine = this.getBusLineById(busLineId);
+        BusStop busStop = this.busStopService.getBusStopById(busStopId);
 
         BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
         busLine.addBusStop(busStopInBusLine);

@@ -36,14 +36,14 @@ public class ScheduleService {
         return scheduleRepository.findAll();
     }
 
-    public Optional<Schedule> getScheduleById(Long id) {
-        return scheduleRepository.findById(id);
+    public Schedule getScheduleById(Long id) {
+        return scheduleRepository.findById(id).orElseThrow(() -> new ScheduleNotExistsException(id));
     }
 
    @Transactional
     public List<BusStopInBusLineResponse> getBusStops(Long scheduleId, Long busStopId) {
         List<BusStopInBusLineResponse> result = new ArrayList<>();
-        BusStop currentBusStop = this.busStopService.getBusStopById(busStopId).orElseThrow(() -> new BusStopNotExistsException(busStopId));
+        BusStop currentBusStop = this.busStopService.getBusStopById(busStopId);
         Schedule schedule = this.scheduleRepository.findById(scheduleId).orElseThrow(() -> new ScheduleNotExistsException(scheduleId));
         List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
 
@@ -52,24 +52,8 @@ public class ScheduleService {
             Collections.reverse(busStops);
         }
 
-
-        //find starting point of currentBusStop and count already driven time
-        int minutesDriven = 0;
-        int indexOfCurrentBusStop = 0;
-        boolean found = false;
-        for(int i = 0; i < busStops.size() && !found; i++) {
-            if(busStops.get(i).getBusStop().equals(currentBusStop)) {
-                    indexOfCurrentBusStop = i;
-                    found = true;
-            } else {
-                minutesDriven = minutesDriven + busStops.get(i).getTimeToNextStop();
-            }
-        }
-
-        //copy busStops from currentBusStop to result and calculate arrival times
-        Date currentTime = this.calculateTodaysDepartureTime(schedule.getDepartureTime());
-        currentTime = DateUtils.addMinutes(currentTime, minutesDriven);
-        for(int i = indexOfCurrentBusStop; i < busStops.size(); i++) {
+        Date currentTime = this.getArrivalTimeForBusStop(schedule, currentBusStop);
+        for(int i = busStops.indexOf(currentBusStop); i < busStops.size(); i++) {
             result.add(new BusStopInBusLineResponse(busStops.get(i), currentTime));
             currentTime = DateUtils.addMinutes(currentTime, busStops.get(i).getTimeToNextStop());
         }
@@ -90,9 +74,33 @@ public class ScheduleService {
         return currentCalender.getTime();
     }
 
+    public Date getArrivalTimeForBusStop(Schedule schedule, BusStop busStop) {
+        //check if the busLine is scheduled backwards
+        List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
+
+        //check if the busLine is scheduled backwards
+        if(!busStops.get(busStops.size()-1).getBusStop().equals(schedule.getDestinationStop())) {
+            Collections.reverse(busStops);
+        }
+        //calculate drivingtime from starting point to busStop
+        int minutesDriven = 0;
+        boolean found = false;
+        for(int i = 0; i < busStops.size() && !found; i++) {
+            if(busStops.get(i).getBusStop().equals(busStop)) {
+                found = true;
+            } else {
+                minutesDriven = minutesDriven + busStops.get(i).getTimeToNextStop();
+            }
+        }
+        //add drivingtime to departure time
+        Date currentTime = this.calculateTodaysDepartureTime(schedule.getDepartureTime());
+        currentTime = DateUtils.addMinutes(currentTime, minutesDriven);
+        return currentTime;
+    }
+
     public Schedule createSchedule(Long BusLineId, Time departureTime, Long DestinationStopId) {
-        BusLine busline = this.busLineService.getBusLineById(BusLineId).orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
-        BusStop destinationStop = this.busStopService.getBusStopById(DestinationStopId).orElseThrow(() -> new IllegalArgumentException("BusLine not found"));
+        BusLine busline = this.busLineService.getBusLineById(BusLineId);
+        BusStop destinationStop = this.busStopService.getBusStopById(DestinationStopId);
         Schedule schedule = new Schedule(busline, departureTime, destinationStop);
         scheduleRepository.save(schedule);
         return schedule;
@@ -103,7 +111,7 @@ public class ScheduleService {
             throw new ScheduleNotExistsException(scheduleId);
         }
         Schedule schedule = this.scheduleRepository.getById(scheduleId);
-        schedule.setDestinationStop(this.busStopService.getBusStopById(destinationStopId).orElseThrow(() -> new IllegalArgumentException("BusLine not found")));
+        schedule.setDestinationStop(this.busStopService.getBusStopById(destinationStopId));
         scheduleRepository.save(schedule);
     }
 

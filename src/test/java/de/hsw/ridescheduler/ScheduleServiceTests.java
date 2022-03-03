@@ -32,7 +32,7 @@ public class ScheduleServiceTests {
 
     @Test
     public void testGetScheduleById() {
-        Schedule schedule = this.scheduleService.getScheduleById(0L).get();
+        Schedule schedule = this.scheduleService.getScheduleById(0L);
         assertEquals(new Time(25200000L), schedule.getDepartureTime());
     }
 
@@ -68,11 +68,11 @@ public class ScheduleServiceTests {
 
     @Test
     public void testChangeDestinationStop() {
-        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).get().getDestinationStop().getName());
+        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
         this.scheduleService.changeDestinationStop(0L, 0L);
-        assertEquals("Münster Geiststraße", this.scheduleService.getScheduleById(0L).get().getDestinationStop().getName());
+        assertEquals("Münster Geiststraße", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
         this.scheduleService.changeDestinationStop(0L, 10L);
-        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).get().getDestinationStop().getName());
+        assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
     }
 
     @Test

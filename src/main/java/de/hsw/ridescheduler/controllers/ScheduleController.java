@@ -44,7 +44,7 @@ public class ScheduleController {
 
     @GetMapping("/schedules/{id}")
     public ScheduleResponse getSchedule(@PathVariable("id") Long id) {
-        Schedule schedule = this.scheduleService.getScheduleById(id).orElseThrow(() -> new ScheduleNotExistsException(id));
+        Schedule schedule = this.scheduleService.getScheduleById(id);
         return this.modelMapper.map(schedule, ScheduleResponse.class);
     }
 

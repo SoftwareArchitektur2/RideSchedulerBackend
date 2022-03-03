@@ -1,17 +1,23 @@
 package de.hsw.ridescheduler.services;
+import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
+import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
+import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopHasBusLinesException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusStopRepository;
+import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,11 +26,13 @@ import java.util.stream.Collectors;
 public class BusStopService {
 
     private BusStopRepository busStopRepository;
+    private ScheduleService scheduleService;
     private ModelMapper modelMapper;
 
     @Autowired
-    public BusStopService(BusStopRepository busStopRepository, ModelMapper modelMapper) {
+    public BusStopService(BusStopRepository busStopRepository, ScheduleService scheduleService, ModelMapper modelMapper) {
         this.busStopRepository = busStopRepository;
+        this.scheduleService = scheduleService;
         this.modelMapper = modelMapper;
     }
 
@@ -45,8 +53,8 @@ public class BusStopService {
         return this.busStopRepository.findByName(name);
     }
 
-    public Optional<BusStop> getBusStopById(Long id) {
-        return this.busStopRepository.findById(id);
+    public BusStop getBusStopById(Long id) {
+        return this.busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
     }
 
     public void changeName(Long id, String name) {
@@ -94,6 +102,28 @@ public class BusStopService {
     }
 
     @Transactional
+    public List<ScheduleResponse> getSchedulesForBusStop(Long id, Date startingTime, Integer duration) {
+        Date endingTime = DateUtils.addMinutes(startingTime, duration);
+        List<ScheduleResponse> result = new ArrayList<>();
+        BusStop busStop = busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
+
+        for(BusStopInBusLine busLine : busStop.getBusLines()) {
+
+            for(Schedule schedule : busLine.getBusLine().getSchedules()) {
+                Date arrivalTime = this.scheduleService.getArrivalTimeForBusStop(schedule, busStop);
+
+                if(arrivalTime.after(startingTime) && arrivalTime.before(endingTime)) {
+                    BusStop destinationStop = schedule.getDestinationStop();
+                    result.add(new ScheduleResponse(this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
+                            , arrivalTime
+                            , new BusStopInBusLineResponse(destinationStop.getId(), destinationStop.getName(), destinationStop.getHasWifi(), 0, null)));
+                }
+            }
+        }
+       return result;
+    }
+
+    @Transactional
     public void deleteBusStopById(Long id) {
         Optional<BusStop> busStopOptional = busStopRepository.findById(id);
         BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
@@ -107,5 +137,4 @@ public class BusStopService {
         }
         busStopRepository.deleteById(id);
     }
-    
 }

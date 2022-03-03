@@ -6,10 +6,12 @@ import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.services.BusStopService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +37,18 @@ public class BusStopController {
 
     @GetMapping("/busStops/{id}")
     public BusStopResponse getBusStopById(@PathVariable("id") Long id) {
-        return modelMapper.map(this.busStopService.getBusStopById(id).orElseThrow(() -> new BusStopNotExistsException(id)), BusStopResponse.class);
+        return modelMapper.map(this.busStopService.getBusStopById(id), BusStopResponse.class);
     }
 
     @GetMapping("/busStops/{id}/busLines")
     public List<BusLineResponse> getBusLinesForBusStop(@PathVariable("id") Long id) {
         return this.busStopService.getBusLinesForBusStop(id);
+    }
+
+    @GetMapping("/busStops/{id}/schedules")
+    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date startingTime, @RequestParam("duration") Integer duration) {
+        return this.busStopService.getSchedulesForBusStop(id, startingTime, duration);
     }
 
     @PostMapping("/busStops/")
