@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ScheduleController {
@@ -24,6 +25,14 @@ public class ScheduleController {
     public ScheduleController(ScheduleService scheduleService, ModelMapper modelMapper) {
         this.scheduleService = scheduleService;
         this.modelMapper = modelMapper;
+    }
+
+    @GetMapping("/schedules/")
+    public List<ScheduleResponse> getAllSchedules() {
+        return scheduleService.getAllSchedules()
+                .stream()
+                .map(schedule -> this.modelMapper.map(schedule, ScheduleResponse.class))
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/schedules/")
