@@ -15,6 +15,8 @@ INSERT INTO ridescheduler.bus_line (name) VALUES ('StadtBus 16');
 
 INSERT INTO ridescheduler.schedule (busline_id, departuretime, busstop_id) VALUES (0, '08:00:00', 10);
 INSERT INTO ridescheduler.schedule (busline_id, departuretime, busstop_id) VALUES (0, '08:10:00', 0);
+INSERT INTO ridescheduler.schedule (busline_id, departuretime, busstop_id) VALUES (1, '08:20:00', 1);
+INSERT INTO ridescheduler.schedule (busline_id, departuretime, busstop_id) VALUES (1, '08:30:00', 2);
 
 INSERT INTO ridescheduler.bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (0, 0, 2);
 INSERT INTO ridescheduler.bus_stop_in_bus_line (bus_stop_id, bus_line_id, time_to_next_stop) VALUES (1, 0, 1);
