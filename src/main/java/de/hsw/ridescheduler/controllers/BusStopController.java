@@ -1,5 +1,6 @@
 package de.hsw.ridescheduler.controllers;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.dtos.*;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
@@ -51,7 +52,8 @@ public class BusStopController {
     }
 
     @GetMapping("/busStops/{id}/schedules")
-    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime") DateTime startingTime, @RequestParam("duration") Integer duration) {
+    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime") @JsonFormat(pattern="yyyy-MM-ddThh:mm:ss:SSSZ")
+            DateTime startingTime, @RequestParam("duration") Integer duration) {
 
         return this.scheduleService.getSchedulesForBusStop(id, startingTime.toDate(), duration);
     }

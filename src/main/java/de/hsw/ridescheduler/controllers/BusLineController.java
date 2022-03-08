@@ -47,11 +47,7 @@ public class BusLineController {
 
     @PatchMapping("/busLines/{id}")
     public void updateBusline(@PathVariable("id") Long id, @RequestBody UpdateBusLineRequest updateBusLineRequest) {
-        BusLine busLine = this.busLineService.getBusLineById(id);
-        if(updateBusLineRequest.getName() != null) {
-            busLine.setName(updateBusLineRequest.getName());
-            this.busLineService.saveBusLine(busLine);
-        }
+        this.busLineService.changeName(id, updateBusLineRequest.getName());
     }
 
     @DeleteMapping("/busLines/{busLineId}")

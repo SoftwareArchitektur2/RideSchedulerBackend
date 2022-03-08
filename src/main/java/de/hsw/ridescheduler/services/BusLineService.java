@@ -165,6 +165,7 @@ public class BusLineService {
         }
         BusLine busLine = this.getBusLineById(busLineId);
         busLine.setName(newName);
+        this.busLineRepository.save(busLine);
     }
 
     @Transactional
