@@ -130,7 +130,7 @@ public class ScheduleService {
 
                 if(arrivalTime.after(startingTime) && arrivalTime.before(endingTime)) {
                     BusStop destinationStop = schedule.getDestinationStop();
-                    result.add(new ScheduleResponse(this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
+                    result.add(new ScheduleResponse(schedule.getId(), this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
                             , arrivalTime
                             , new BusStopInBusLineResponse(busLine, arrivalTime)));
                 }

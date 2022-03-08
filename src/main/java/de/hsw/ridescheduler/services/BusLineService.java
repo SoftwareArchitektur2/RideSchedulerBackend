@@ -108,7 +108,8 @@ public class BusLineService {
                 BusStop busStop = busStopInBusLine.getBusStop();
 
                 if(busStop.getId().equals(busStopId)) {
-                    ScheduleResponse scheduleResponse = new ScheduleResponse(this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
+                    ScheduleResponse scheduleResponse = new ScheduleResponse(schedule.getId(),
+                                                                             this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
                                                                              time,
                                                                              this.modelMapper.map(busStopInBusLine, BusStopInBusLineResponse.class));
                     response.add(scheduleResponse);

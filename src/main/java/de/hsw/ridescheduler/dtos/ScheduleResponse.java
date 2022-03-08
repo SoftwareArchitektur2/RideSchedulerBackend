@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class ScheduleResponse {
 
+    private Long id;
     private BusLineResponse busLine;
     private Date departureTime;
     private BusStopInBusLineResponse destinationStop;
@@ -15,10 +16,19 @@ public class ScheduleResponse {
     public ScheduleResponse() {
     }
 
-    public ScheduleResponse(BusLineResponse busLine, Date departureTime, BusStopInBusLineResponse destinationStop) {
+    public ScheduleResponse(Long id, BusLineResponse busLine, Date departureTime, BusStopInBusLineResponse destinationStop) {
+        this.id = id;
         this.busLine = busLine;
         this.departureTime = departureTime;
         this.destinationStop = destinationStop;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public BusLineResponse getBusLine() {
