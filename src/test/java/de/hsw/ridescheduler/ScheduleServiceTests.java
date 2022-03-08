@@ -42,31 +42,31 @@ public class ScheduleServiceTests {
     @Test
     public void testCreateAndDeleteSchedule() {
         BusStop a = new BusStop("A", true);
-        BusStop a1 = this.busStopService.saveBusStop(a);
+        a = this.busStopService.saveBusStop(a);
         BusStop b = new BusStop("B", true);
-        BusStop a2 = this.busStopService.saveBusStop(b);
+        b = this.busStopService.saveBusStop(b);
         BusStop c = new BusStop("C", true);
-        BusStop a3 = this.busStopService.saveBusStop(c);
+        c = this.busStopService.saveBusStop(c);
         BusStop d = new BusStop("D", true);
-        BusStop a4 = this.busStopService.saveBusStop(d);
+        d = this.busStopService.saveBusStop(d);
         BusLine busLine = new BusLine("Line15");
-        BusLine b1 = this.busLineService.saveBusLine(busLine);
-        this.busLineService.addBusStop(0L, 2L, 1);
-        this.busLineService.addBusStop(1L, 2L, 2);
-        this.busLineService.addBusStop(2L, 2L, 3);
-        this.busLineService.addBusStop(3L, 2L, 4);
+        busLine = this.busLineService.saveBusLine(busLine);
+        this.busLineService.addBusStop(2L, 11L, 1);
+        this.busLineService.addBusStop(2L, 12L, 2);
+        this.busLineService.addBusStop(2L, 13L, 3);
+        this.busLineService.addBusStop(2L, 14L, 4);
 
-        assertEquals(2, this.scheduleService.getAllSchedules().size());
-        Schedule c1 = this.scheduleService.createSchedule(0L, new Time(26000000L), 3L);
-        assertEquals(3, this.scheduleService.getAllSchedules().size());
+        assertEquals(4, this.scheduleService.getAllSchedules().size());
+        Schedule c1 = this.scheduleService.createSchedule(2L, new Time(26000000L), 14L);
+        assertEquals(5, this.scheduleService.getAllSchedules().size());
 
         this.scheduleService.deleteScheduleById(c1.getId());
-        this.busStopService.deleteBusStopById(a1.getId());
-        this.busStopService.deleteBusStopById(a2.getId());
-        this.busStopService.deleteBusStopById(a3.getId());
-        this.busStopService.deleteBusStopById(a4.getId());
-        this.busLineService.deleteBusLineById(b1.getId());
-        assertEquals(2, this.scheduleService.getAllSchedules().size());
+        this.busLineService.deleteBusLineById(busLine.getId());
+        this.busStopService.deleteBusStopById(a.getId());
+        this.busStopService.deleteBusStopById(b.getId());
+        this.busStopService.deleteBusStopById(c.getId());
+        this.busStopService.deleteBusStopById(d.getId());
+        assertEquals(4, this.scheduleService.getAllSchedules().size());
     }
 
     @Test

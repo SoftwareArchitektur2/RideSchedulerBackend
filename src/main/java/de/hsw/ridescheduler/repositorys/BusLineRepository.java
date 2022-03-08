@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface BusLineRepository extends JpaRepository<BusLine, Long> {
     Optional<BusLine> findByName(String name);
+
+    boolean existsByName(String name);
 }

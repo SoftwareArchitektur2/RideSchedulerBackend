@@ -57,7 +57,7 @@ public class BusStopService {
 
     @Transactional
     public void changeName(Long id, String name) {
-        if(this.busStopRepository.findByName(name).isPresent()) {
+        if(this.busStopRepository.existsByName(name)) {
             throw new BusStopAlreadyExistsException(name);
         }
         BusStop busStop = this.getBusStopById(id);
@@ -70,23 +70,21 @@ public class BusStopService {
         busStop.setHasWifi(hasWifi);
     }
 
+    @Transactional
     public void addBusLine(Long id, BusStopInBusLine busLine) {
-        Optional<BusStop> busStopOptional = busStopRepository.findById(id);
-        BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
+        BusStop busStop = this.getBusStopById(id);
         busStop.addBusLine(busLine);
-        this.busStopRepository.save(busStop);
     }
 
+    @Transactional
     public void removeBusLine(Long id, BusStopInBusLine busLine) {
-        Optional<BusStop> busStopOptional = busStopRepository.findById(id);
-        BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
+        BusStop busStop = this.getBusStopById(id);
         busStop.removeBusLine(busLine);
-        this.busStopRepository.save(busStop);
     }
 
     @Transactional
     public List<BusLineResponse> getBusLinesForBusStop(Long id) {
-        BusStop busStop = busStopRepository.findById(id).orElseThrow(() -> new BusStopNotExistsException(id));
+        BusStop busStop = this.getBusStopById(id);
         return busStop.getBusLines()
                 .stream()
                 .map(busLine -> new BusLineResponse(busLine.getBusLine().getId(), busLine.getBusLine().getName()))
@@ -95,8 +93,7 @@ public class BusStopService {
 
     @Transactional
     public void deleteBusStopById(Long id) {
-        Optional<BusStop> busStopOptional = busStopRepository.findById(id);
-        BusStop busStop = busStopOptional.orElseThrow(() -> new BusStopNotExistsException(id));
+        BusStop busStop = this.getBusStopById(id);
         if (!busStop.getBusLines().isEmpty()) {
             String names = "";
             for (BusStopInBusLine bus : busStop.getBusLines()) {

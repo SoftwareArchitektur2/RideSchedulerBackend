@@ -9,6 +9,7 @@ import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusLineAlreadyExistsException;
+import de.hsw.ridescheduler.exceptions.BusLineHasSchedulesException;
 import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusLineRepository;
@@ -44,7 +45,7 @@ public class BusLineService {
 
     @Transactional
     public BusLine saveBusLine(BusLine busLine) {
-        if(this.busLineRepository.findByName(busLine.getName()).isPresent()) {
+        if(this.busLineRepository.existsByName(busLine.getName())) {
             throw new BusLineAlreadyExistsException(busLine.getName());
         }
         this.busLineRepository.save(busLine);
@@ -65,8 +66,7 @@ public class BusLineService {
 
     @Transactional
     public List<BusStopInBusLineResponse> getAllBusStops(Long busLineId) {
-        BusLine busLine = this.busLineRepository
-                .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        BusLine busLine = this.getBusLineById(busLineId);
         List<BusStopInBusLineResponse> result = new ArrayList<>(busLine.getBusStops().size());
         Date currentTime = new Date();
 
@@ -78,8 +78,8 @@ public class BusLineService {
     }
 
     @Transactional
-    public List<BusStopResponse> getDestinationStops(Long id) {
-        BusLine busLine = this.busLineRepository.findById(id).orElseThrow(() -> new BusLineNotExistsException(id));
+    public List<BusStopResponse> getDestinationStops(Long busLineId) {
+        BusLine busLine = this.getBusLineById(busLineId);
         List<BusStopResponse> response = new ArrayList<>(2);
         response.add(this.modelMapper.map(busLine.getBusStops().get(0).getBusStop(), BusStopResponse.class));
         response.add(this.modelMapper.map(busLine.getBusStops().get(busLine.getBusStops().size() - 1).getBusStop(), BusStopResponse.class));
@@ -88,15 +88,16 @@ public class BusLineService {
 
     @Transactional
     public List<ScheduleResponse> getAllSchedules(Long busLineId) {
-        BusLine busLine = this.busLineRepository
-                .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
-        return busLine.getSchedules().stream().map(schedule -> this.modelMapper.map(schedule, ScheduleResponse.class)).collect(Collectors.toList());
+        BusLine busLine = this.getBusLineById(busLineId);
+        return busLine.getSchedules()
+                .stream()
+                .map(schedule -> this.modelMapper.map(schedule, ScheduleResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public List<ScheduleResponse> getSchedulesForBusStop(Long busLineId, Long busStopId) {
-        BusLine busLine = this.busLineRepository
-                .findById(busLineId).orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        BusLine busLine = this.getBusLineById(busLineId);
         List<Schedule> schedules = busLine.getSchedules();
         List<ScheduleResponse> response = new ArrayList<>(schedules.size());
 
@@ -120,7 +121,7 @@ public class BusLineService {
     }
 
     @Transactional
-    public void addBusStop(Long busStopId, Long busLineId, int timeToNextStop) {
+    public void addBusStop(Long busLineId, Long busStopId, int timeToNextStop) {
         BusLine busLine = this.getBusLineById(busLineId);
         BusStop busStop = this.busStopService.getBusStopById(busStopId);
 
@@ -131,8 +132,7 @@ public class BusLineService {
     }
 
     public void removeBusStop(Long busStopId, Long busLineId) {
-        BusLine busLine = this.busLineRepository.findById(busLineId)
-                .orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        BusLine busLine = this.getBusLineById(busLineId);
         BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId)
                 .orElseThrow(() -> new BusStopNotExistsException(busStopId));
 
@@ -150,7 +150,7 @@ public class BusLineService {
 
     @Transactional
     public void changeName(Long busLineId, String newName) {
-        if(this.busLineRepository.findByName(newName).isPresent()) {
+        if(this.busLineRepository.existsByName(newName)) {
             throw new BusLineAlreadyExistsException(newName);
         }
         BusLine busLine = this.getBusLineById(busLineId);
@@ -159,12 +159,16 @@ public class BusLineService {
 
     @Transactional
     public void deleteBusLineById(Long busLineId) {
-        Optional<BusLine> optionalBusLine = this.busLineRepository.findById(busLineId);
-        BusLine busLine = optionalBusLine.orElseThrow(() -> new BusLineNotExistsException(busLineId));
+        BusLine busLine = this.getBusLineById(busLineId);
         if(busLine.getSchedules().isEmpty()) {
+            busLine.getBusStops().forEach(busStopInBusLine -> this.busStopInBusLineRepository.deleteById(busStopInBusLine.getId()));
             this.busLineRepository.delete(busLine);
         } else {
-            throw new IllegalArgumentException("BusLine has schedules");
+            String schedules = "";
+            for(Schedule schedule : busLine.getSchedules()) {
+                schedules += schedule.getId() + " ";
+            }
+            throw new BusLineHasSchedulesException(busLine.getName());
         }
     }
 }
