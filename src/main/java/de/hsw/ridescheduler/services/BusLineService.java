@@ -8,10 +8,7 @@ import de.hsw.ridescheduler.dtos.BusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
-import de.hsw.ridescheduler.exceptions.BusLineAlreadyExistsException;
-import de.hsw.ridescheduler.exceptions.BusLineHasSchedulesException;
-import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
-import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
+import de.hsw.ridescheduler.exceptions.*;
 import de.hsw.ridescheduler.repositorys.BusLineRepository;
 import de.hsw.ridescheduler.repositorys.BusStopInBusLineRepository;
 import org.apache.commons.lang3.time.DateUtils;
@@ -126,24 +123,33 @@ public class BusLineService {
         BusLine busLine = this.getBusLineById(busLineId);
         BusStop busStop = this.busStopService.getBusStopById(busStopId);
 
-        BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
-        busLine.addBusStop(busStopInBusLine);
-        this.busLineRepository.save(busLine);
-        //TODO change destination stop for every schedule with this busLine
+        if(busLine.getBusStops().size() > 0 && busLine.getSchedules().size() > 0) {
+            BusStop destinationStop = busLine.getBusStops().get(busLine.getBusStops().size() - 1).getBusStop();
+
+            BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
+            busLine.addBusStop(busStopInBusLine);
+            this.busLineRepository.save(busLine);
+
+            busLine.getSchedules().stream()
+                    .filter(schedule -> schedule.getDestinationStop().equals(destinationStop))
+                    .forEach(schedule -> schedule.setDestinationStop(busStop));
+        } else {
+            BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
+            busLine.addBusStop(busStopInBusLine);
+            this.busLineRepository.save(busLine);
+        }
     }
 
     @Transactional
     public void removeBusStop(Long busLineId, Long busStopId) {
         BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId)
                 .orElseThrow(() -> new BusStopNotExistsException(busStopId));
-
         if(this.isBusStopLastOrFirst(busStopInBusLine)) {
-            throw new IllegalArgumentException("BusStop is last or first");
+            throw new BusStopIsLastOrFirstException(String.format("Die Haltestelle %s ist die erste oder die letzte Haltestelle der Buslinie %s", busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusLine().getName()));
         }
         BusLine busLine = busStopInBusLine.getBusLine();
         busLine.getBusStops().remove(busStopInBusLine);
         this.busLineRepository.save(busLine);
-
     }
 
     private Boolean isBusStopLastOrFirst(BusStopInBusLine busStopInBusLine) {
@@ -164,14 +170,13 @@ public class BusLineService {
     @Transactional
     public void deleteBusLineById(Long busLineId) {
         BusLine busLine = this.getBusLineById(busLineId);
-        if(busLine.getSchedules().isEmpty()) {
-            this.busLineRepository.deleteById(busLineId);
-        } else {
+        if(!busLine.getSchedules().isEmpty()) {
             String schedules = "";
             for(Schedule schedule : busLine.getSchedules()) {
                 schedules += schedule.getId() + " ";
             }
             throw new BusLineHasSchedulesException(busLine.getName());
         }
+        this.busLineRepository.deleteById(busLineId);
     }
 }
