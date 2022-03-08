@@ -18,7 +18,7 @@ public class BusLine {
     @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL)
     private List<Schedule> schedules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "busLine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BusStopInBusLine> busStops = new ArrayList<>();
 
     public BusLine() {
@@ -72,7 +72,9 @@ public class BusLine {
         this.busStops.add(busStop);
     }
 
-    public void removeBusStop(BusStopInBusLine busStop) {
-        this.busStops.remove(busStop);
+    public void removeBusStop(Long busStopInBusLineId) {
+        List<BusStopInBusLine> busStops = this.getBusStops();
+        busStops.remove(busStops.stream().filter(busStop -> busStop.getId().equals(busStopInBusLineId)).findFirst().get());
+        this.setBusStops(busStops);
     }
 }

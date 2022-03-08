@@ -139,7 +139,7 @@ public class BusLineService {
         if(this.isBusStopLastOrFirst(busStopInBusLine)) {
             throw new IllegalArgumentException("BusStop is last or first");
         }
-        busLine.removeBusStop(busStopInBusLine);
+        busLine.removeBusStop(busStopInBusLine.getId());
     }
 
     private Boolean isBusStopLastOrFirst(BusStopInBusLine busStopInBusLine) {
@@ -161,7 +161,6 @@ public class BusLineService {
     public void deleteBusLineById(Long busLineId) {
         BusLine busLine = this.getBusLineById(busLineId);
         if(busLine.getSchedules().isEmpty()) {
-            busLine.getBusStops().forEach(busStopInBusLine -> this.busStopInBusLineRepository.deleteById(busStopInBusLine.getId()));
             this.busLineRepository.delete(busLine);
         } else {
             String schedules = "";

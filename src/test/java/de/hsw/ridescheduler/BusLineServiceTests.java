@@ -74,6 +74,9 @@ public class BusLineServiceTests {
         this.busLineService.addBusStop(newLine.getId(), stopa.getId(), 2);
         this.busLineService.addBusStop(newLine.getId(), stopb.getId(), 1);
         assertEquals(2, this.busLineService.getBusLineById(newLine.getId()).getBusStops().size());
+        assertEquals(2, this.busLineService.getAllBusStops(newLine.getId()).size());
+        assertEquals("a", this.busLineService.getAllBusStops(newLine.getId()).get(0).getName());
+        assertEquals("b", this.busLineService.getAllBusStops(newLine.getId()).get(1).getName());
 
         this.busLineService.deleteBusLineById(newLine.getId());
         this.busStopService.deleteBusStopById(stopa.getId());

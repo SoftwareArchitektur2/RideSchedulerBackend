@@ -50,8 +50,7 @@ public class BusStopController {
     }
 
     @GetMapping("/busStops/{id}/schedules")
-    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) Date startingTime, @RequestParam("duration") Integer duration) {
+    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime") Date startingTime, @RequestParam("duration") Integer duration) {
         return this.scheduleService.getSchedulesForBusStop(id, startingTime, duration);
     }
 

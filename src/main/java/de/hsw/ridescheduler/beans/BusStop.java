@@ -21,7 +21,7 @@ public class BusStop {
     @Column(name = "hasWifi", nullable = true)
     private Boolean hasWifi;
 
-    @OneToMany(mappedBy = "busStop", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "busStop", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BusStopInBusLine> busLines = new ArrayList<>();
 
     public BusStop() {

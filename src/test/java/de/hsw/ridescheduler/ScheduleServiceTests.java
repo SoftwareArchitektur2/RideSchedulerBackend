@@ -77,8 +77,9 @@ public class ScheduleServiceTests {
         cal.set(Calendar.MINUTE,0);
         cal.set(Calendar.SECOND,0);
         cal.set(Calendar.MILLISECOND,0);
+        Date date = cal.getTime();
 
-        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(5L, cal.getTime(), 120);
+        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(5L, date, 120);
         assertEquals(4, schedules.size());
         assertEquals("StadtBus 15", schedules.get(0).getBusLine().getName());
         assertEquals("StadtBus 16", schedules.get(2).getBusLine().getName());

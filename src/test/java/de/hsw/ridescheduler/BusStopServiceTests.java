@@ -43,9 +43,20 @@ public class BusStopServiceTests {
 
     @Test
     public void testChangeName() {
+        assertEquals("Münster Kolde-Ring /LVM", busStopService.getBusStopById(1L).getName());
         busStopService.changeName(1L, "new Name");
         assertEquals("new Name", busStopService.getBusStopById(1L).getName());
         busStopService.changeName(1L, "Münster Kolde-Ring /LVM");
+        assertEquals("Münster Kolde-Ring /LVM", busStopService.getBusStopById(1L).getName());
+    }
+
+    @Test
+    public void testChangeHasWifi() {
+        assertEquals(false, busStopService.getBusStopById(5L).getHasWifi());
+        busStopService.changeHasWifi(5L, true);
+        assertEquals(true, busStopService.getBusStopById(5L).getHasWifi());
+        busStopService.changeHasWifi(5L, false);
+        assertEquals(false, busStopService.getBusStopById(5L).getHasWifi());
     }
 
     @Test
