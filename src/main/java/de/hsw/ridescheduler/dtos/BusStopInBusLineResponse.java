@@ -8,6 +8,7 @@ import java.util.Date;
 
 public class BusStopInBusLineResponse extends BusStopResponse{
 
+    private Long busStopInBusLineId;
     private int timeToNextStop;
     private Date arrivalTime;
 
@@ -15,16 +16,26 @@ public class BusStopInBusLineResponse extends BusStopResponse{
         super();
     }
 
-    public BusStopInBusLineResponse(Long id, String name, Boolean hasWifi, int timeToNextStop, Date arrivalTime) {
+    public BusStopInBusLineResponse(Long id, String name, Boolean hasWifi, Long busStopInBusLineId, int timeToNextStop, Date arrivalTime) {
         super(id, name, hasWifi);
+        this.busStopInBusLineId = busStopInBusLineId;
         this.timeToNextStop = timeToNextStop;
         this.arrivalTime = arrivalTime;
     }
 
     public BusStopInBusLineResponse(BusStopInBusLine busStopInBusLine, Date currentTime) {
         super(busStopInBusLine.getBusStop().getId(), busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusStop().getHasWifi());
+        this.busStopInBusLineId = busStopInBusLine.getId();
         this.timeToNextStop = busStopInBusLine.getTimeToNextStop();
         this.arrivalTime = currentTime;
+    }
+
+    public Long getBusStopInBusLineId() {
+        return busStopInBusLineId;
+    }
+
+    public void setBusStopInBusLineId(Long busStopInBusLineId) {
+        this.busStopInBusLineId = busStopInBusLineId;
     }
 
     public int getTimeToNextStop() {

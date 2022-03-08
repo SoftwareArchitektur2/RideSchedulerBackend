@@ -132,7 +132,7 @@ public class ScheduleService {
                     BusStop destinationStop = schedule.getDestinationStop();
                     result.add(new ScheduleResponse(this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
                             , arrivalTime
-                            , new BusStopInBusLineResponse(destinationStop.getId(), destinationStop.getName(), destinationStop.getHasWifi(), 0, null)));
+                            , new BusStopInBusLineResponse(busLine, arrivalTime)));
                 }
             }
         }
