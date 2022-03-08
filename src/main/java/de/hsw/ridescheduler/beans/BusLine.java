@@ -3,6 +3,7 @@ package de.hsw.ridescheduler.beans;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bus_line", schema = "ridescheduler")
@@ -72,9 +73,16 @@ public class BusLine {
         this.busStops.add(busStop);
     }
 
-    public void removeBusStop(Long busStopInBusLineId) {
-        List<BusStopInBusLine> busStops = this.getBusStops();
-        busStops.remove(busStops.stream().filter(busStop -> busStop.getId().equals(busStopInBusLineId)).findFirst().get());
-        this.setBusStops(busStops);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BusLine busLine = (BusLine) o;
+        return Objects.equals(id, busLine.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, schedules, busStops);
     }
 }

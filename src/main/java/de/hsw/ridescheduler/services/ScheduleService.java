@@ -143,8 +143,7 @@ public class ScheduleService {
         BusLine busline = this.busLineService.getBusLineById(BusLineId);
         BusStop destinationStop = this.busStopService.getBusStopById(DestinationStopId);
         Schedule schedule = new Schedule(busline, departureTime, destinationStop);
-        scheduleRepository.save(schedule);
-        return schedule;
+        return scheduleRepository.save(schedule);
     }
 
     @Transactional

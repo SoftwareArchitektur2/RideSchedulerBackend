@@ -54,7 +54,7 @@ public class BusLineController {
         }
     }
 
-    @DeleteMapping("/busLines/{id}")
+    @DeleteMapping("/busLines/{busLineId}")
     public void removeBusLine(@PathVariable Long busLineId) {
         this.busLineService.getBusLineById(busLineId);
         this.busLineService.deleteBusLineById(busLineId);
@@ -87,6 +87,6 @@ public class BusLineController {
 
     @DeleteMapping("/busLines/{busLineId}/busStops/{busStopId}")
     public void removeBusStop(@PathVariable("busLineId") Long busLineId, @PathVariable("busStopId") Long busStopId) {
-        this.busLineService.removeBusStop(busStopId, busLineId);
+        this.busLineService.removeBusStop(busLineId, busStopId);
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,8 +49,7 @@ public class BusLineService {
         if(this.busLineRepository.existsByName(busLine.getName())) {
             throw new BusLineAlreadyExistsException(busLine.getName());
         }
-        this.busLineRepository.save(busLine);
-        return busLine;
+        return this.busLineRepository.save(busLine);
     }
 
     public List<BusLine> getAllBusLines() {
@@ -128,18 +128,21 @@ public class BusLineService {
         BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
         busLine.addBusStop(busStopInBusLine);
         this.busLineRepository.save(busLine);
-        this.busStopService.addBusLine(busStopId, busStopInBusLine);
+        //TODO change destination stop for every schedule with this busLine
     }
 
-    public void removeBusStop(Long busStopId, Long busLineId) {
-        BusLine busLine = this.getBusLineById(busLineId);
+    @Transactional
+    public void removeBusStop(Long busLineId, Long busStopId) {
         BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId)
                 .orElseThrow(() -> new BusStopNotExistsException(busStopId));
 
         if(this.isBusStopLastOrFirst(busStopInBusLine)) {
             throw new IllegalArgumentException("BusStop is last or first");
         }
-        busLine.removeBusStop(busStopInBusLine.getId());
+        BusLine busLine = busStopInBusLine.getBusLine();
+        busLine.getBusStops().remove(busStopInBusLine);
+        this.busLineRepository.save(busLine);
+
     }
 
     private Boolean isBusStopLastOrFirst(BusStopInBusLine busStopInBusLine) {
@@ -161,7 +164,7 @@ public class BusLineService {
     public void deleteBusLineById(Long busLineId) {
         BusLine busLine = this.getBusLineById(busLineId);
         if(busLine.getSchedules().isEmpty()) {
-            this.busLineRepository.delete(busLine);
+            this.busLineRepository.deleteById(busLineId);
         } else {
             String schedules = "";
             for(Schedule schedule : busLine.getSchedules()) {

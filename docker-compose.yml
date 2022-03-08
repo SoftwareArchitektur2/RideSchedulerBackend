@@ -1,6 +1,7 @@
 version: '2'
 
-services:
+services:    
+
   app:
     build:
       context: .
@@ -14,7 +15,6 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
     ports:
       - "8080:8080"
-          
   db:
     image: 'postgres:14.2'
     container_name: rideschedulerDB

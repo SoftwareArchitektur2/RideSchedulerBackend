@@ -39,8 +39,7 @@ public class BusStopService {
         if (this.busStopRepository.existsByName(busStop.getName())) {
             throw new BusStopAlreadyExistsException(busStop.getName());
         }
-        this.busStopRepository.save(busStop);
-        return busStop;
+        return this.busStopRepository.save(busStop);
     }
 
     public List<BusStop> getAllBusStops() {
@@ -62,25 +61,16 @@ public class BusStopService {
         }
         BusStop busStop = this.getBusStopById(id);
         busStop.setName(name);
+        this.busStopRepository.save(busStop);
     }
 
     @Transactional
     public void changeHasWifi(Long id, Boolean hasWifi) {
         BusStop busStop = this.getBusStopById(id);
         busStop.setHasWifi(hasWifi);
+        this.busStopRepository.save(busStop);
     }
 
-    @Transactional
-    public void addBusLine(Long id, BusStopInBusLine busLine) {
-        BusStop busStop = this.getBusStopById(id);
-        busStop.addBusLine(busLine);
-    }
-
-    @Transactional
-    public void removeBusLine(Long id, BusStopInBusLine busLine) {
-        BusStop busStop = this.getBusStopById(id);
-        busStop.removeBusLine(busLine);
-    }
 
     @Transactional
     public List<BusLineResponse> getBusLinesForBusStop(Long id) {

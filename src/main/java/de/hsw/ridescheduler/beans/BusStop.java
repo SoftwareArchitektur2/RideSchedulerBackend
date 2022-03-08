@@ -78,7 +78,7 @@ public class BusStop {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BusStop busStop = (BusStop) o;
-        return id.equals(busStop.id) && name.equals(busStop.name) && Objects.equals(hasWifi, busStop.hasWifi) && Objects.equals(busLines, busStop.busLines);
+        return id.equals(busStop.id);
     }
 
     @Override

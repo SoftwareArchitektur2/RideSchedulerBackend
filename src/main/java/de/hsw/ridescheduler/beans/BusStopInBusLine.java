@@ -1,6 +1,7 @@
 package de.hsw.ridescheduler.beans;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "bus_stop_in_bus_line", schema = "ridescheduler")
@@ -60,5 +61,18 @@ public class BusStopInBusLine {
 
     public void setTimeToNextStop(Integer timeToNextStop) {
         this.timeToNextStop = timeToNextStop;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BusStopInBusLine that = (BusStopInBusLine) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, busStop, busLine, timeToNextStop);
     }
 }
