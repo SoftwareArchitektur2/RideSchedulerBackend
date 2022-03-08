@@ -141,9 +141,9 @@ public class BusLineService {
     }
 
     @Transactional
-    public void removeBusStop(Long busLineId, Long busStopId) {
-        BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId)
-                .orElseThrow(() -> new BusStopNotExistsException(busStopId));
+    public void removeBusStop(Long busLineInBusStopId) {
+        BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findById(busLineInBusStopId)
+                .orElseThrow(() -> new BusStopNotExistsException(busLineInBusStopId));
         if(this.isBusStopLastOrFirst(busStopInBusLine)) {
             throw new BusStopIsLastOrFirstException(String.format("Die Haltestelle %s ist die erste oder die letzte Haltestelle der Buslinie %s", busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusLine().getName()));
         }

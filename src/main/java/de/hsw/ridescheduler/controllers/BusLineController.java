@@ -76,13 +76,14 @@ public class BusLineController {
         return this.busLineService.getAllSchedules(id);
     }
 
+    //TODO change to busLineInBusStopId
     @GetMapping("/busLines/{id}/schedules/{busStopId}")
     public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable Long id, @PathVariable Long busStopId) {
         return this.busLineService.getSchedulesForBusStop(id, busStopId);
     }
 
-    @DeleteMapping("/busLines/{busLineId}/busStops/{busStopId}")
-    public void removeBusStop(@PathVariable("busLineId") Long busLineId, @PathVariable("busStopId") Long busStopId) {
-        this.busLineService.removeBusStop(busLineId, busStopId);
+    @DeleteMapping("/busLines/{busLineInBusStopId}")
+    public void removeBusStop(@PathVariable("busLineInBusStopId") Long busLineInBusStopId) {
+        this.busLineService.removeBusStop(busLineInBusStopId);
     }
 }
