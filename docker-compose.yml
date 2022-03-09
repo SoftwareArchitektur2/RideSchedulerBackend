@@ -1,20 +1,6 @@
 version: '2'
 
 services:    
-
-  app:
-    build:
-      context: .
-    container_name: rideschedulerBackend
-    depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ridescheduler
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
-    ports:
-      - "8080:8080"
   db:
     image: 'postgres:14.2'
     container_name: rideschedulerDB

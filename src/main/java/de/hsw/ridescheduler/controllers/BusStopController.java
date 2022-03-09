@@ -7,6 +7,7 @@ import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.services.BusStopService;
 import de.hsw.ridescheduler.services.ScheduleService;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -52,8 +53,8 @@ public class BusStopController {
     }
 
     @GetMapping("/busStops/{id}/schedules")
-    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime") @JsonFormat(pattern="yyyy-MM-ddThh:mm:ss:SSSZ")
-            DateTime startingTime, @RequestParam("duration") Integer duration) {
+    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime startingTime, @RequestParam("duration") Integer duration) {
 
         return this.scheduleService.getSchedulesForBusStop(id, startingTime.toDate(), duration);
     }

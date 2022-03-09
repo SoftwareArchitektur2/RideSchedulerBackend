@@ -3,6 +3,7 @@ package de.hsw.ridescheduler;
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
+import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.repositorys.BusStopInBusLineRepository;
@@ -68,7 +69,7 @@ public class BusLineServiceTests {
     @Sql("/busline-busstop.sql")
     public void testRemoveBusStopFromBusLine() {
         assertEquals(3, this.repository.findAll().size());
-        this.busLineService.removeBusStop(0L);
+        this.busLineService.removeBusStop(1L);
         assertEquals(2, this.repository.findAll().size());
     }
 
@@ -82,28 +83,18 @@ public class BusLineServiceTests {
     }
 
     @Test
-    @Sql("/data.sql")
-    public void testAddBusStopToBusLine() {
-        assertEquals(2, this.busLineService.getAllBusLines().size());
-        assertEquals(11, this.busStopService.getAllBusStops().size());
-
-        BusLine newLine = new BusLine("TestBusLine");
-        newLine = this.busLineService.saveBusLine(newLine);
-        assertEquals(3, this.busLineService.getAllBusLines().size());
-        assertEquals("TestBusLine", this.busLineService.getBusLineById(newLine.getId()).getName());
-
-        BusStop stopa = new BusStop("a", Boolean.FALSE);
-        BusStop stopb = new BusStop("b", Boolean.FALSE);
-        stopa = this.busStopService.saveBusStop(stopa);
-        stopb = this.busStopService.saveBusStop(stopb);
-        assertEquals(13, this.busStopService.getAllBusStops().size());
-        assertEquals("a", this.busStopService.getBusStopById(stopa.getId()).getName());
-        assertEquals("b", this.busStopService.getBusStopById(stopb.getId()).getName());
-
-        this.busLineService.addBusStop(newLine.getId(), stopa.getId(), 2);
-        this.busLineService.addBusStop(newLine.getId(), stopb.getId(), 1);
-        assertEquals(stopa.getId(), this.repository.findByBusLineIdAndBusStopId(newLine.getId(), stopa.getId()).get().getBusStop().getId());
-        assertEquals(stopb.getId(), this.repository.findByBusLineIdAndBusStopId(newLine.getId(), stopb.getId()).get().getBusStop().getId());
+    @Transactional
+    @Sql("/busline-busstop.sql")
+    public void testSetNewBusStopAsDestinationStop() {
+        BusLine busLine = this.busLineService.getBusLineById(0L);
+        Schedule schedule1 = busLine.getSchedules().get(0);
+        assertEquals(2L, schedule1.getDestinationStop().getId());
+        BusStop busStop = new BusStop("TestBusStop", true);
+        busStop = this.busStopService.saveBusStop(busStop);
+        this.busLineService.addBusStop(busLine.getId(), busStop.getId(), 2);
+        assertEquals(busStop, schedule1.getDestinationStop());
+        Schedule schedule2 = busLine.getSchedules().get(1);
+        assertEquals(0L, schedule2.getDestinationStop().getId());
     }
 
     @Test
@@ -183,8 +174,7 @@ public class BusLineServiceTests {
         assertEquals("b", this.busLineService.getAllBusStops(newLine.getId()).get(1).getName());
         assertEquals("c", this.busLineService.getAllBusStops(newLine.getId()).get(2).getName());
 
-        //TODO fix
-        //this.busLineService.removeBusStop(newLine.getId(), stopb.getId());
+        this.busLineService.removeBusStop(this.repository.findByBusLineIdAndBusStopId(newLine.getId(), stopb.getId()).get().getId());
         assertEquals(2, this.busLineService.getAllBusStops(newLine.getId()).size());
         assertEquals("a", this.busLineService.getAllBusStops(newLine.getId()).get(0).getName());
         assertEquals("c", this.busLineService.getAllBusStops(newLine.getId()).get(1).getName());

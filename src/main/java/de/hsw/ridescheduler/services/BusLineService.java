@@ -93,9 +93,9 @@ public class BusLineService {
     }
 
     @Transactional
-    public List<ScheduleResponse> getSchedulesForBusStop(Long busLineId, Long busStopId) {
-        BusLine busLine = this.getBusLineById(busLineId);
-        List<Schedule> schedules = busLine.getSchedules();
+    public List<ScheduleResponse> getSchedulesForBusStop(Long busLineInBusStopId) {
+        BusStopInBusLine originalBusStop = this.busStopInBusLineRepository.findById(busLineInBusStopId).orElseThrow(() -> new BusStopNotExistsException(busLineInBusStopId));
+        List<Schedule> schedules = originalBusStop.getBusLine().getSchedules();
         List<ScheduleResponse> response = new ArrayList<>(schedules.size());
 
         for(Schedule schedule : schedules) {
@@ -104,7 +104,7 @@ public class BusLineService {
             for(BusStopInBusLine busStopInBusLine : schedule.getBusLine().getBusStops()) {
                 BusStop busStop = busStopInBusLine.getBusStop();
 
-                if(busStop.getId().equals(busStopId)) {
+                if(busStop.getId().equals(originalBusStop.getId())) {
                     ScheduleResponse scheduleResponse = new ScheduleResponse(schedule.getId(),
                                                                              this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
                                                                              time,
@@ -142,7 +142,7 @@ public class BusLineService {
 
     @Transactional
     public void removeBusStop(Long busLineInBusStopId) {
-        BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findById(busLineInBusStopId)
+         BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findById(busLineInBusStopId)
                 .orElseThrow(() -> new BusStopNotExistsException(busLineInBusStopId));
         if(this.isBusStopLastOrFirst(busStopInBusLine)) {
             throw new BusStopIsLastOrFirstException(String.format("Die Haltestelle %s ist die erste oder die letzte Haltestelle der Buslinie %s", busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusLine().getName()));
