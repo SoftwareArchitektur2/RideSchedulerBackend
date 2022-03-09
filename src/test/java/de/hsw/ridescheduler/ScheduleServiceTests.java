@@ -8,9 +8,12 @@ import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.services.BusLineService;
 import de.hsw.ridescheduler.services.BusStopService;
 import de.hsw.ridescheduler.services.ScheduleService;
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 
 import java.sql.Time;
 import java.util.Calendar;
@@ -19,7 +22,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(
+        // handle data on a test case basis to have better control and avoid tests breaking on data change
+        properties = {"spring.datasource.initialization-mode=never", "spring.jpa.hibernate.ddl-auto=none"})
+@Sql(value = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@SqlMergeMode(SqlMergeMode.MergeMode.MERGE) // allow additional method-level @Sql statements
 public class ScheduleServiceTests {
 
     private ScheduleService scheduleService;
@@ -34,12 +42,14 @@ public class ScheduleServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetScheduleById() {
         Schedule schedule = this.scheduleService.getScheduleById(0L);
         assertEquals(new Time(25200000L), schedule.getDepartureTime());
     }
 
     @Test
+    @Sql("/data.sql")
     public void testCreateAndDeleteSchedule() {
         BusStop a = new BusStop("A", true);
         a = this.busStopService.saveBusStop(a);
@@ -70,6 +80,7 @@ public class ScheduleServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetSchedulesForBusStop() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
@@ -86,6 +97,7 @@ public class ScheduleServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testChangeDestinationStop() {
         assertEquals("Münster Dingbängerweg", this.scheduleService.getScheduleById(0L).getDestinationStop().getName());
         this.scheduleService.changeDestinationStop(0L, 0L);
@@ -95,6 +107,7 @@ public class ScheduleServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetBusStops() {
         List<BusStopInBusLineResponse> busStops = this.scheduleService.getBusStops(0L, 0L);
         assertEquals(11, busStops.size());
@@ -105,5 +118,23 @@ public class ScheduleServiceTests {
         assertEquals(5, busStops2.size());
         assertEquals("Münster Boeselagerstr.", busStops2.get(0).getName());
         assertEquals("Münster Dingbängerweg", busStops2.get(4).getName());
+    }
+
+    @Test
+    @Sql("/nightBus.sql")
+    public void testGetSchedulesForNightBus() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.set(Calendar.HOUR_OF_DAY,23);
+        cal.set(Calendar.MINUTE,30);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND,0);
+        Date date = cal.getTime();
+
+        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(1L, date, 120);
+        assertEquals(1, schedules.size());
+        assertEquals("line1", schedules.get(0).getBusLine().getName());
+        Date departureTime = DateUtils.addMinutes(date, 60);
+        assertEquals(departureTime, schedules.get(0).getDepartureTime());
     }
 }

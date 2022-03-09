@@ -8,6 +8,8 @@ import de.hsw.ridescheduler.services.BusStopService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
@@ -16,7 +18,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(
+        // handle data on a test case basis to have better control and avoid tests breaking on data change
+        properties = {"spring.datasource.initialization-mode=never", "spring.jpa.hibernate.ddl-auto=none"})
+@Sql(value = "/schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(value = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@SqlMergeMode(SqlMergeMode.MergeMode.MERGE) // allow additional method-level @Sql statements
 public class BusStopServiceTests {
 
     private BusStopService busStopService;
@@ -27,21 +34,25 @@ public class BusStopServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetBusStopById() {
         assertEquals("Münster Geiststraße", busStopService.getBusStopById(0L).getName());
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetBusStopByName() {
         assertEquals(0L, busStopService.getBusStopByName("Münster Geiststraße").get().getId());
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetAllBusStops() {
         assertEquals(11, busStopService.getAllBusStops().size());
     }
 
     @Test
+    @Sql("/data.sql")
     public void testChangeName() {
         assertEquals("Münster Kolde-Ring /LVM", busStopService.getBusStopById(1L).getName());
         busStopService.changeName(1L, "new Name");
@@ -51,6 +62,7 @@ public class BusStopServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testChangeHasWifi() {
         assertEquals(false, busStopService.getBusStopById(5L).getHasWifi());
         busStopService.changeHasWifi(5L, true);
@@ -60,6 +72,7 @@ public class BusStopServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testAddBusStop() {
         BusStop busStop = new BusStop("new BusStop", false);
         busStopService.saveBusStop(busStop);
@@ -68,6 +81,7 @@ public class BusStopServiceTests {
     }
 
     @Test
+    @Sql("/data.sql")
     public void testGetBusLinesForBusStop() {
         List<BusLineResponse> busLines = busStopService.getBusLinesForBusStop(5L);
         assertEquals(2, busLines.size());
