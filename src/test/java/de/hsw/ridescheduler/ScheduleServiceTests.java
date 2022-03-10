@@ -42,10 +42,10 @@ public class ScheduleServiceTests {
     }
 
     @Test
-    @Sql("/data.sql")
+    @Sql("/nightBus.sql")
     public void testGetScheduleById() {
         Schedule schedule = this.scheduleService.getScheduleById(0L);
-        assertEquals(new Time(25200000L), schedule.getDepartureTime());
+        assertEquals(new Time(81000000L), schedule.getDepartureTime());
     }
 
     @Test
