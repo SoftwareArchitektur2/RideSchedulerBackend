@@ -136,6 +136,7 @@ public class ScheduleService {
                 }
             }
         }
+        result.sort(Comparator.comparing(ScheduleResponse::getDepartureTime));
         return result;
     }
 
