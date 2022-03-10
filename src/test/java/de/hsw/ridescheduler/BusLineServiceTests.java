@@ -9,6 +9,7 @@ import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.repositorys.BusStopInBusLineRepository;
 import de.hsw.ridescheduler.services.BusLineService;
 import de.hsw.ridescheduler.services.BusStopService;
+import de.hsw.ridescheduler.services.ScheduleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,13 +33,15 @@ public class BusLineServiceTests {
 
     private BusLineService busLineService;
     private BusStopService busStopService;
+    private ScheduleService scheduleService;
 
     private BusStopInBusLineRepository repository;
 
     @Autowired
-    public BusLineServiceTests(BusLineService busLineService, BusStopService busStopService, BusStopInBusLineRepository repository) {
+    public BusLineServiceTests(BusLineService busLineService, BusStopService busStopService, ScheduleService scheduleService, BusStopInBusLineRepository repository) {
         this.busLineService = busLineService;
         this.busStopService = busStopService;
+        this.scheduleService = scheduleService;
         this.repository = repository;
     }
 
@@ -76,6 +79,8 @@ public class BusLineServiceTests {
     @Test
     @Sql("/busline-busstop.sql")
     public void testRemoveBusStopAfterBusLine() {
+        this.scheduleService.deleteScheduleById(0L);
+        this.scheduleService.deleteScheduleById(1L);
         this.busLineService.deleteBusLineById(0L);
         assertEquals(0, this.repository.findAll().size());
         this.busStopService.deleteBusStopById(1L);

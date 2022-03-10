@@ -153,6 +153,7 @@ public class ScheduleService {
     }
 
     public void deleteScheduleById(Long id) {
-        scheduleRepository.deleteById(id);
+        Schedule schedule = this.getScheduleById(id);
+        scheduleRepository.delete(schedule);
     }
 }
