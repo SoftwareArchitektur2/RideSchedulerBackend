@@ -81,7 +81,7 @@ public class BusLineController {
         return this.busLineService.getSchedulesForBusStop(busLineInBusStopId);
     }
 
-    @DeleteMapping("/busLines/{busLineInBusStopId}")
+    @DeleteMapping("/busLines/busStops/{busLineInBusStopId}")
     public void removeBusStop(@PathVariable("busLineInBusStopId") Long busLineInBusStopId) {
         this.busLineService.removeBusStop(busLineInBusStopId);
     }
