@@ -92,10 +92,20 @@ public class BusLineService {
                 .collect(Collectors.toList());
     }
 
+    //TODO refactor this with good tests
     @Transactional
-    public List<ScheduleResponse> getSchedulesForBusStop(Long busLineInBusStopId) {
-        BusStopInBusLine originalBusStop = this.busStopInBusLineRepository.findById(busLineInBusStopId).orElseThrow(() -> new BusStopNotExistsException(busLineInBusStopId));
-        List<Schedule> schedules = originalBusStop.getBusLine().getSchedules();
+    public List<ScheduleResponse> getSchedulesForBusStop(Long busLineId, Long busStopId) {
+        List<BusStopInBusLine> originalBusStop = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId);
+        if(originalBusStop.isEmpty()) {
+            if(this.busLineRepository.existsById(busLineId)) {
+                throw new BusStopNotExistsException(busStopId);    
+            } else {
+                throw new BusLineNotExistsException(busLineId);
+            }
+        }
+
+        List<Schedule> schedules = new ArrayList<>();
+        originalBusStop.forEach(busStopInBusLine -> schedules.addAll(busStopInBusLine.getBusLine().getSchedules()));
         List<ScheduleResponse> response = new ArrayList<>(schedules.size());
 
         for(Schedule schedule : schedules) {
@@ -104,7 +114,7 @@ public class BusLineService {
             for(BusStopInBusLine busStopInBusLine : schedule.getBusLine().getBusStops()) {
                 BusStop busStop = busStopInBusLine.getBusStop();
 
-                if(busStop.getId().equals(originalBusStop.getId())) {
+                if(busStop.getId().equals(busStopId)) {
                     ScheduleResponse scheduleResponse = new ScheduleResponse(schedule.getId(),
                                                                              this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
                                                                              time,

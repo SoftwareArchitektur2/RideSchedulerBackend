@@ -117,6 +117,7 @@ public class ScheduleService {
         return currentTime;
     }
 
+    //TODO refactor this with good tests
     @Transactional
     public List<ScheduleResponse> getSchedulesForBusStop(Long buStopId, Date startingTime, Integer duration) {
         Date endingTime = DateUtils.addMinutes(startingTime, duration);

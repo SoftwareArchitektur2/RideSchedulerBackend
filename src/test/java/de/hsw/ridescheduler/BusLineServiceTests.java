@@ -123,7 +123,7 @@ public class BusLineServiceTests {
 
         this.busLineService.addBusStop(newLineId, aId, 2);
         this.busLineService.addBusStop(newLineId, bId, 1);
-        assertEquals(bId, this.repository.findByBusLineIdAndBusStopId(newLineId, bId).get().getBusStop().getId());
+        assertEquals(bId, this.repository.findByBusLineIdAndBusStopId(newLineId, bId).get(0).getBusStop().getId());
         assertEquals(2, this.busLineService.getAllBusStops(newLineId).size());
         BusLine a = this.busLineService.getBusLineById(newLineId);
         assertEquals(2, a.getBusStops().size());
@@ -132,7 +132,7 @@ public class BusLineServiceTests {
         assertEquals("b", this.busLineService.getAllBusStops(newLineId).get(1).getName());
 
         this.busLineService.deleteBusLineById(newLineId);
-        assertFalse(this.repository.findByBusLineIdAndBusStopId(newLineId, aId).isPresent());
+        assertFalse(this.repository.findByBusLineIdAndBusStopId(newLineId, aId).size() > 0);
         this.busStopService.deleteBusStopById(aId);
         this.busStopService.deleteBusStopById(bId);
         assertEquals(2, this.busLineService.getAllBusLines().size());
@@ -179,7 +179,7 @@ public class BusLineServiceTests {
         assertEquals("b", this.busLineService.getAllBusStops(newLine.getId()).get(1).getName());
         assertEquals("c", this.busLineService.getAllBusStops(newLine.getId()).get(2).getName());
 
-        this.busLineService.removeBusStop(this.repository.findByBusLineIdAndBusStopId(newLine.getId(), stopb.getId()).get().getId());
+        this.busLineService.removeBusStop(this.repository.findByBusLineIdAndBusStopId(newLine.getId(), stopb.getId()).get(0).getId());
         assertEquals(2, this.busLineService.getAllBusStops(newLine.getId()).size());
         assertEquals("a", this.busLineService.getAllBusStops(newLine.getId()).get(0).getName());
         assertEquals("c", this.busLineService.getAllBusStops(newLine.getId()).get(1).getName());

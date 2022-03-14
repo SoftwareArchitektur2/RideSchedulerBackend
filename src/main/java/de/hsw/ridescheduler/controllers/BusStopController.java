@@ -52,6 +52,7 @@ public class BusStopController {
         return this.busStopService.getBusLinesForBusStop(id);
     }
 
+    //Get every schedule for this busstop within the given time range
     @GetMapping("/busStops/{id}/schedules")
     public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("id") Long id, @RequestParam("startingTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startingTime, @RequestParam("duration") Integer duration) {
