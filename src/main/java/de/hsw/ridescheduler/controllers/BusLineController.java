@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:80")
 public class BusLineController {
 
     private BusLineService busLineService;
@@ -22,7 +22,7 @@ public class BusLineController {
     private ModelMapper modelMapper;
 
     @Autowired
-    public BusLineController(BusLineService busLineService, BusStopService busStopService,ModelMapper modelMapper) {
+    public BusLineController(BusLineService busLineService, BusStopService busStopService, ModelMapper modelMapper) {
         this.busLineService = busLineService;
         this.busStopService = busStopService;
         this.modelMapper = modelMapper;
@@ -39,8 +39,8 @@ public class BusLineController {
     @PostMapping("/busLines/")
     public ResponseEntity<BusLineResponse> addBusline(@RequestBody AddBusLineRequest addBusLineRequest) {
         return new ResponseEntity<BusLineResponse>(this.modelMapper.map(
-                this.busLineService.saveBusLine(this.modelMapper.map(addBusLineRequest, BusLine.class))
-                , BusLineResponse.class), HttpStatus.CREATED);
+                this.busLineService.saveBusLine(this.modelMapper.map(addBusLineRequest, BusLine.class)),
+                BusLineResponse.class), HttpStatus.CREATED);
     }
 
     @PatchMapping("/busLines/{id}")
@@ -56,7 +56,7 @@ public class BusLineController {
 
     @GetMapping("/busLines/{id}/busStops")
     public List<BusStopInBusLineResponse> getBusStops(@PathVariable Long id) {
-       return this.busLineService.getAllBusStops(id);
+        return this.busLineService.getAllBusStops(id);
     }
 
     @GetMapping("/busLines/{id}/destinationStops")
@@ -74,9 +74,10 @@ public class BusLineController {
         return this.busLineService.getAllSchedules(id);
     }
 
-    //Get every schedule for this busstop from this busline
+    // Get every schedule for this busstop from this busline
     @GetMapping("/busLines/{busLineId}/busStops/{busStopId}/schedules")
-    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("busLineId") Long busLineId, @PathVariable("busStopId") Long busStopId) {
+    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("busLineId") Long busLineId,
+            @PathVariable("busStopId") Long busStopId) {
         return this.busLineService.getSchedulesForBusStop(busLineId, busStopId);
     }
 
