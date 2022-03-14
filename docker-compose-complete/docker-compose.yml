@@ -1,0 +1,41 @@
+version: '3.7'
+services:
+  ride-scheduler:
+    container_name: ride-scheduler
+    build: 
+      context: ./ride-scheduler
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: "http://app:8080"
+    depends_on:
+      - app
+    volumes:
+      - '/app/node_modules'
+    ports:
+      - 3030:80
+  app:
+    build:
+      context: ./RideSchedulerBackend
+    container_name: rideschedulerBackend
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ridescheduler
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+    ports:
+      - "8080:8080"
+  db:
+    image: 'postgres:14.2'
+    container_name: rideschedulerDB
+    environment:
+      - POSTGRES_DB=ridescheduler
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./RideSchedulerBackend/postgres-data:/var/lib/postgresql/data
+      - ./RideSchedulerBackend/postgres/schema.sql:/docker-entrypoint-initdb.d/a_init.sql
+      - ./RideSchedulerBackend/postgres/data.sql:/docker-entrypoint-initdb.d/b_data.sql
