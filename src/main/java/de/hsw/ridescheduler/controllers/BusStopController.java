@@ -1,12 +1,9 @@
 package de.hsw.ridescheduler.controllers;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.dtos.*;
-import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.services.BusStopService;
 import de.hsw.ridescheduler.services.ScheduleService;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

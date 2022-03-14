@@ -7,7 +7,6 @@ import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
-import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.exceptions.ScheduleNotExistsException;
 import de.hsw.ridescheduler.repositorys.ScheduleRepository;
 import org.apache.commons.lang3.time.DateUtils;

@@ -1,9 +1,6 @@
 package de.hsw.ridescheduler.dtos;
 
-import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
-import de.hsw.ridescheduler.beans.Schedule;
-
 import java.util.Date;
 
 public class BusStopInBusLineResponse extends BusStopResponse{

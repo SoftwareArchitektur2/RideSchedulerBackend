@@ -1,6 +1,5 @@
 package de.hsw.ridescheduler.advices;
 
-import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.EntityHasDependenciesException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,7 +13,7 @@ public class EnityHasDependenciesAdvice {
     @ResponseBody
     @ExceptionHandler(EntityHasDependenciesException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String EntityHasDependenciesAdvice(BusStopAlreadyExistsException ex) {
+    String EntityHasDependenciesAdvice(EntityHasDependenciesException ex) {
         return ex.getMessage();
     }
 }

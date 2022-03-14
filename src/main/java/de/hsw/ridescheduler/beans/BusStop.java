@@ -1,7 +1,5 @@
 package de.hsw.ridescheduler.beans;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

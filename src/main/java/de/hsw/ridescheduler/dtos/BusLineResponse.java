@@ -1,7 +1,5 @@
 package de.hsw.ridescheduler.dtos;
 
-import java.util.List;
-
 public class BusLineResponse {
 
     private Long id;

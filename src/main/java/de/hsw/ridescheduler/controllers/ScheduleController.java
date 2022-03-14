@@ -4,7 +4,6 @@ import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.AddScheduleRequest;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
-import de.hsw.ridescheduler.exceptions.ScheduleNotExistsException;
 import de.hsw.ridescheduler.services.ScheduleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

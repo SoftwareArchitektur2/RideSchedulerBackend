@@ -2,7 +2,6 @@ package de.hsw.ridescheduler.controllers;
 
 import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.dtos.*;
-import de.hsw.ridescheduler.exceptions.BusLineNotExistsException;
 import de.hsw.ridescheduler.services.BusLineService;
 import de.hsw.ridescheduler.services.BusStopService;
 import org.modelmapper.ModelMapper;
@@ -11,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -1,23 +1,16 @@
 package de.hsw.ridescheduler.services;
-import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
-import de.hsw.ridescheduler.beans.Schedule;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
-import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
-import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import de.hsw.ridescheduler.exceptions.BusStopHasBusLinesException;
 import de.hsw.ridescheduler.exceptions.BusStopNotExistsException;
 import de.hsw.ridescheduler.repositorys.BusStopRepository;
-import org.apache.commons.lang3.time.DateUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

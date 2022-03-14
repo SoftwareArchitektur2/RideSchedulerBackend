@@ -1,7 +1,5 @@
 package de.hsw.ridescheduler.dtos;
 
-import de.hsw.ridescheduler.beans.BusStop;
-
 public class AddBusStopRequest {
 
     private String name;
