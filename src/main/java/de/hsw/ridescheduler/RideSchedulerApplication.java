@@ -16,4 +16,5 @@ public class RideSchedulerApplication {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
+	
 }
