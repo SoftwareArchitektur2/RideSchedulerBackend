@@ -153,7 +153,7 @@ public class BusLineService {
          BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findById(busLineInBusStopId)
                 .orElseThrow(() -> new BusStopNotExistsException(busLineInBusStopId));
         if(this.isBusStopLastOrFirst(busStopInBusLine)) {
-            throw new BusStopIsLastOrFirstException(String.format("Die Haltestelle %s ist die erste oder die letzte Haltestelle der Buslinie %s", busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusLine().getName()));
+            throw new BusStopIsLastOrFirstException(busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusLine().getName());
         }
         BusLine busLine = busStopInBusLine.getBusLine();
         busLine.getBusStops().remove(busStopInBusLine);

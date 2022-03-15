@@ -14,7 +14,7 @@ public class AlreadyExistsAdvice {
     @ResponseBody
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String BusStopAlreadyExistsAdvice(BusStopAlreadyExistsException ex) {
+    String BusStopAlreadyExistsAdvice(AlreadyExistsException ex) {
         return ex.getMessage();
     }
 }
