@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,40 +91,52 @@ public class BusLineService {
                 .collect(Collectors.toList());
     }
 
-    //TODO refactor this with good tests
     @Transactional
     public List<ScheduleResponse> getSchedulesForBusStop(Long busLineId, Long busStopId) {
-        List<BusStopInBusLine> originalBusStop = this.busStopInBusLineRepository.findByBusLineIdAndBusStopId(busLineId, busStopId);
-        if(originalBusStop.isEmpty()) {
-            if(this.busLineRepository.existsById(busLineId)) {
-                throw new BusStopNotExistsException(busStopId);    
-            } else {
-                throw new BusLineNotExistsException(busLineId);
-            }
-        }
-
-        List<Schedule> schedules = new ArrayList<>();
-        originalBusStop.forEach(busStopInBusLine -> schedules.addAll(busStopInBusLine.getBusLine().getSchedules()));
+        List<Schedule> schedules = this.getBusLineById(busLineId).getSchedules();
         List<ScheduleResponse> response = new ArrayList<>(schedules.size());
 
         for(Schedule schedule : schedules) {
-            Date time = schedule.getDepartureTime();
-
-            for(BusStopInBusLine busStopInBusLine : schedule.getBusLine().getBusStops()) {
-                BusStop busStop = busStopInBusLine.getBusStop();
-
-                if(busStop.getId().equals(busStopId)) {
-                    ScheduleResponse scheduleResponse = new ScheduleResponse(schedule.getId(),
-                                                                             this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
-                                                                             time,
-                                                                             this.modelMapper.map(busStopInBusLine, BusStopInBusLineResponse.class));
-                    response.add(scheduleResponse);
-                } else {
-                    time = DateUtils.addMinutes(time, busStopInBusLine.getTimeToNextStop());
-                }
-            }
+            List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
+            if(schedule.getDestinationStop().equals(busStops.get(busStops.size() - 1).getBusStop())) {
+                response.add(iterateOverBusStopsForSchedule(schedule, busStops, busStopId));
+            } else {
+                response.add(iterateBackwardsOverBusStopsForSchedule(schedule, busStops, busStopId));
+            }            
         }
         return response;
+    }
+
+    @Transactional
+    private ScheduleResponse iterateOverBusStopsForSchedule(Schedule schedule, List<BusStopInBusLine> busStops, Long busStopId) {
+        Date departureTime = schedule.getDepartureTime();
+        for(BusStopInBusLine busStopInBusLine : busStops) {
+            if(busStopId.equals(busStopInBusLine.getBusStop().getId())) {
+                return new ScheduleResponse(schedule.getId(),
+                    this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
+                    schedule.getDepartureTime(),
+                    new BusStopInBusLineResponse(busStopInBusLine, departureTime));
+            } else {
+                departureTime = DateUtils.addMinutes(departureTime, busStopInBusLine.getTimeToNextStop());
+            }
+        }
+        throw new BusStopNotExistsException(busStopId);
+    }
+
+    @Transactional
+    private ScheduleResponse iterateBackwardsOverBusStopsForSchedule(Schedule schedule, List<BusStopInBusLine> busStops, Long busStopId) {
+        Date departureTime = schedule.getDepartureTime();
+        for(int i = busStops.size() - 1; i > 0; i--) {
+            if(busStopId.equals(busStops.get(i).getBusStop().getId())) {
+                return new ScheduleResponse(schedule.getId(),
+                    this.modelMapper.map(schedule.getBusLine(), BusLineResponse.class),
+                    schedule.getDepartureTime(),
+                    new BusStopInBusLineResponse(busStops.get(i), departureTime));
+            } else {
+                departureTime = DateUtils.addMinutes(departureTime, busStops.get(i).getTimeToNextStop());
+            }
+        }
+        throw new BusStopNotExistsException(busStopId);
     }
 
     @Transactional
