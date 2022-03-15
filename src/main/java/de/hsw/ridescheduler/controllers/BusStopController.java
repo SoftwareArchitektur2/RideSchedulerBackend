@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:300", "http://localhost:80", "http://localhost", "http://ride-scheduler:3000", "http://ridescheduler:80"}
+, allowedHeaders = "*"
+, allowCredentials = "true"
+, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH, RequestMethod.TRACE, RequestMethod.PUT})
 public class BusStopController {
 
     private BusStopService busStopService;

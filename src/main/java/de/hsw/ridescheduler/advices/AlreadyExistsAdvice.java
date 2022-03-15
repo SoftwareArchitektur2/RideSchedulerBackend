@@ -1,7 +1,6 @@
 package de.hsw.ridescheduler.advices;
 
 import de.hsw.ridescheduler.exceptions.AlreadyExistsException;
-import de.hsw.ridescheduler.exceptions.BusStopAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
