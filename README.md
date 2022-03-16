@@ -6,7 +6,7 @@ ______ _     _        _____      _              _       _
 | |\ \| | (_| |  __/ /\__/ / (__| | | |  __/ (_| | |_| | |  __/ |   
 \_| \_|_|\__,_|\___| \____/ \___|_| |_|\___|\__,_|\__,_|_|\___|_|   
 ```                                                                                                                                   
-# A React backend application for Ride Scheduler
+# A Spring-boot backend application for Ride Scheduler
 Allows users to view available buslines and schedules. Details can be shown and the user is able to search for journey routes.
 
 Administrators can add/edit/delete buslines, busstops and schedules.
