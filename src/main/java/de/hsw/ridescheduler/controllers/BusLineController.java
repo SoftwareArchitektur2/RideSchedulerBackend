@@ -77,11 +77,10 @@ public class BusLineController {
         return this.busLineService.getAllSchedules(id);
     }
 
-    // Get every schedule for this busstop from this busline
     @GetMapping("/busLines/{busLineId}/busStops/{busStopId}/schedules")
-    public List<ScheduleResponse> getSchedulesForBusStop(@PathVariable("busLineId") Long busLineId,
+    public List<ArrivalTimeResponse> getSchedulesForBusStop(@PathVariable("busLineId") Long busLineId,
             @PathVariable("busStopId") Long busStopId) {
-        return this.busLineService.getSchedulesForBusStop(busLineId, busStopId);
+        return this.busLineService.getSchedulesForBusStop(busLineId, busStopId).stream().map(arrivalTime -> new ArrivalTimeResponse(arrivalTime)).collect(Collectors.toList());
     }
 
     @DeleteMapping("/busLines/busStops/{busLineInBusStopId}")
