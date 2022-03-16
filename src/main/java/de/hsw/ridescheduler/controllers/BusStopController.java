@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "${allowed-origin}"
-, allowedHeaders = "*"
-, allowCredentials = "true"
-, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH, RequestMethod.TRACE, RequestMethod.PUT})
+        , allowedHeaders = "*"
+        , allowCredentials = "true"
+        , methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH, RequestMethod.TRACE, RequestMethod.PUT})
 public class BusStopController {
 
     private final BusStopService busStopService;
@@ -68,10 +68,10 @@ public class BusStopController {
 
     @PatchMapping("/busStops/{id}")
     public void updateBusStop(@PathVariable("id") Long id, @RequestBody UpdateBusStopRequest updateBusStopRequest) {
-        if(updateBusStopRequest.getName() != null) {
+        if (updateBusStopRequest.getName() != null) {
             this.busStopService.changeName(id, updateBusStopRequest.getName());
         }
-        if(updateBusStopRequest.getHasWifi() != null) {
+        if (updateBusStopRequest.getHasWifi() != null) {
             this.busStopService.changeHasWifi(id, updateBusStopRequest.getHasWifi());
         }
     }

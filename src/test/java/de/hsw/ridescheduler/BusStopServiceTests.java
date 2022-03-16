@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE) // allow additional method-level @Sql statements
 public class BusStopServiceTests {
 
-    private BusStopService busStopService;
+    private final BusStopService busStopService;
 
     @Autowired
     public BusStopServiceTests(BusStopService busStopService) {

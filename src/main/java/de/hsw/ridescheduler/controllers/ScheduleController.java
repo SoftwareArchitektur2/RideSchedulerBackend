@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 , methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH, RequestMethod.TRACE, RequestMethod.PUT})
 public class ScheduleController {
 
-    private ScheduleService scheduleService;
-    private ModelMapper modelMapper;
+    private final ScheduleService scheduleService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public ScheduleController(ScheduleService scheduleService, ModelMapper modelMapper) {

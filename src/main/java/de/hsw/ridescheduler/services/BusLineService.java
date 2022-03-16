@@ -40,7 +40,7 @@ public class BusLineService {
 
     @Transactional
     public BusLine saveBusLine(BusLine busLine) {
-        if(this.busLineRepository.existsByName(busLine.getName())) {
+        if (this.busLineRepository.existsByName(busLine.getName())) {
             throw new BusLineAlreadyExistsException(busLine.getName());
         }
         return this.busLineRepository.save(busLine);
@@ -94,21 +94,21 @@ public class BusLineService {
         List<Schedule> schedules = this.getBusLineById(busLineId).getSchedules();
         List<Date> response = new ArrayList<>(schedules.size());
 
-        for(Schedule schedule : schedules) {
+        for (Schedule schedule : schedules) {
             List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
-            if(schedule.getDestinationStop().equals(busStops.get(busStops.size() - 1).getBusStop())) {
+            if (schedule.getDestinationStop().equals(busStops.get(busStops.size() - 1).getBusStop())) {
                 response.add(iterateOverBusStopsForSchedule(schedule, busStops, busStopId));
             } else {
                 response.add(iterateBackwardsOverBusStopsForSchedule(schedule, busStops, busStopId));
-            }            
+            }
         }
         return response;
     }
 
     private Date iterateOverBusStopsForSchedule(Schedule schedule, List<BusStopInBusLine> busStops, Long busStopId) {
         Date arrivalTime = schedule.getDepartureTime();
-        for(BusStopInBusLine busStopInBusLine : busStops) {
-            if(busStopId.equals(busStopInBusLine.getBusStop().getId())) {
+        for (BusStopInBusLine busStopInBusLine : busStops) {
+            if (busStopId.equals(busStopInBusLine.getBusStop().getId())) {
                 return arrivalTime;
             } else {
                 arrivalTime = DateUtils.addMinutes(arrivalTime, busStopInBusLine.getTimeToNextStop());
@@ -119,8 +119,8 @@ public class BusLineService {
 
     private Date iterateBackwardsOverBusStopsForSchedule(Schedule schedule, List<BusStopInBusLine> busStops, Long busStopId) {
         Date arrivalTime = schedule.getDepartureTime();
-        for(int i = busStops.size() - 1; i > 0; i--) {
-            if(busStopId.equals(busStops.get(i).getBusStop().getId())) {
+        for (int i = busStops.size() - 1; i > 0; i--) {
+            if (busStopId.equals(busStops.get(i).getBusStop().getId())) {
                 return arrivalTime;
             } else {
                 arrivalTime = DateUtils.addMinutes(arrivalTime, busStops.get(i).getTimeToNextStop());
@@ -134,7 +134,7 @@ public class BusLineService {
         BusLine busLine = this.getBusLineById(busLineId);
         BusStop busStop = this.busStopService.getBusStopById(busStopId);
 
-        if(busLine.getBusStops().size() > 0 && busLine.getSchedules().size() > 0) {
+        if (busLine.getBusStops().size() > 0 && busLine.getSchedules().size() > 0) {
             BusStop destinationStop = busLine.getBusStops().get(busLine.getBusStops().size() - 1).getBusStop();
 
             BusStopInBusLine busStopInBusLine = new BusStopInBusLine(busStop, busLine, timeToNextStop);
@@ -153,9 +153,9 @@ public class BusLineService {
 
     @Transactional
     public void removeBusStop(Long busLineInBusStopId) {
-         BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findById(busLineInBusStopId)
+        BusStopInBusLine busStopInBusLine = this.busStopInBusLineRepository.findById(busLineInBusStopId)
                 .orElseThrow(() -> new BusStopNotExistsException(busLineInBusStopId));
-        if(this.isBusStopLastOrFirst(busStopInBusLine)) {
+        if (this.isBusStopLastOrFirst(busStopInBusLine)) {
             throw new BusStopIsLastOrFirstException(busStopInBusLine.getBusStop().getName(), busStopInBusLine.getBusLine().getName());
         }
         BusLine busLine = busStopInBusLine.getBusLine();
@@ -171,7 +171,7 @@ public class BusLineService {
 
     @Transactional
     public void changeName(Long busLineId, String newName) {
-        if(this.busLineRepository.existsByName(newName)) {
+        if (this.busLineRepository.existsByName(newName)) {
             throw new BusLineAlreadyExistsException(newName);
         }
         BusLine busLine = this.getBusLineById(busLineId);
@@ -182,9 +182,9 @@ public class BusLineService {
     @Transactional
     public void deleteBusLineById(Long busLineId) {
         BusLine busLine = this.getBusLineById(busLineId);
-        if(!busLine.getSchedules().isEmpty()) {
+        if (!busLine.getSchedules().isEmpty()) {
             StringBuilder schedules = new StringBuilder();
-            for(Schedule schedule : busLine.getSchedules()) {
+            for (Schedule schedule : busLine.getSchedules()) {
                 schedules.append(schedule.getId()).append(" ");
             }
             throw new BusLineHasSchedulesException(busLine.getName());

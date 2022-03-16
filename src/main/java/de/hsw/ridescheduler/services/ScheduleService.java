@@ -42,36 +42,28 @@ public class ScheduleService {
         return scheduleRepository.findById(id).orElseThrow(() -> new ScheduleNotExistsException(id));
     }
 
-   @Transactional
+    @Transactional
     public List<BusStopInBusLineResponse> getBusStops(Long scheduleId, Long busStopId) {
         List<BusStopInBusLineResponse> result = new ArrayList<>();
         BusStop currentBusStop = this.busStopService.getBusStopById(busStopId);
-        Schedule schedule = this.scheduleRepository.findById(scheduleId).orElseThrow(() -> new ScheduleNotExistsException(scheduleId));
+        Schedule schedule = this.getScheduleById(scheduleId);
+        List<BusStopInBusLine> busStops = this.getBusStopsForSchedule(schedule);
 
-       //check if the busLine is scheduled backwards
-       List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
+        int minutesDriven = 0;
+        boolean found = false;
+        int indexOfCurrentBusStop = 0;
+        for (int i = 0; i < busStops.size() && !found; i++) {
+            if (busStops.get(i).getBusStop().equals(currentBusStop)) {
+                found = true;
+                indexOfCurrentBusStop = i;
+            } else {
+                minutesDriven += busStops.get(i).getTimeToNextStop();
+            }
+        }
+        Date currentTime = this.calculateTodaysDepartureTime(schedule.getDepartureTime());
+        currentTime = DateUtils.addMinutes(currentTime, minutesDriven);
 
-       //check if the busLine is scheduled backwards
-       if(!busStops.get(busStops.size()-1).getBusStop().equals(schedule.getDestinationStop())) {
-           Collections.reverse(busStops);
-       }
-       //calculate drivingtime from starting point to busStop
-       int minutesDriven = 0;
-       boolean found = false;
-       int indexOfCurrentBusStop = 0;
-       for(int i = 0; i < busStops.size() && !found; i++) {
-           if(busStops.get(i).getBusStop().equals(currentBusStop)) {
-               found = true;
-               indexOfCurrentBusStop = i;
-           } else {
-               minutesDriven = minutesDriven + busStops.get(i).getTimeToNextStop();
-           }
-       }
-       //add drivingtime to departure time
-       Date currentTime = this.calculateTodaysDepartureTime(schedule.getDepartureTime());
-       currentTime = DateUtils.addMinutes(currentTime, minutesDriven);
-
-        for(int i = indexOfCurrentBusStop; i < busStops.size(); i++) {
+        for (int i = indexOfCurrentBusStop; i < busStops.size(); i++) {
             result.add(new BusStopInBusLineResponse(busStops.get(i), currentTime));
             currentTime = DateUtils.addMinutes(currentTime, busStops.get(i).getTimeToNextStop());
         }
@@ -79,9 +71,8 @@ public class ScheduleService {
     }
 
     private Date calculateTodaysDepartureTime(Date departureTime) {
-        Date currentTime = new Date();
         Calendar currentCalender = Calendar.getInstance();
-        currentCalender.setTime(currentTime);
+        currentCalender.setTime(new Date());
 
         Calendar departureCalender = GregorianCalendar.getInstance();
         departureCalender.setTime(departureTime);
@@ -92,42 +83,44 @@ public class ScheduleService {
         return currentCalender.getTime();
     }
 
-    public Date getArrivalTimeForBusStop(Schedule schedule, BusStop busStop) {
-        //check if the busLine is scheduled backwards
-        List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
+    private Date getArrivalTimeForBusStop(Schedule schedule, BusStop busStop) {
+        List<BusStopInBusLine> busStops = this.getBusStopsForSchedule(schedule);
 
-        //check if the busLine is scheduled backwards
-        if(!busStops.get(busStops.size()-1).getBusStop().equals(schedule.getDestinationStop())) {
-            Collections.reverse(busStops);
-        }
-        //calculate drivingtime from starting point to busStop
         int minutesDriven = 0;
         boolean found = false;
-        for(int i = 0; i < busStops.size() && !found; i++) {
-            if(busStops.get(i).getBusStop().equals(busStop)) {
+        for (int i = 0; i < busStops.size() && !found; i++) {
+            if (busStops.get(i).getBusStop().equals(busStop)) {
                 found = true;
             } else {
-                minutesDriven = minutesDriven + busStops.get(i).getTimeToNextStop();
+                minutesDriven += busStops.get(i).getTimeToNextStop();
             }
         }
-        //add drivingtime to departure time
+
         Date currentTime = this.calculateTodaysDepartureTime(schedule.getDepartureTime());
         currentTime = DateUtils.addMinutes(currentTime, minutesDriven);
         return currentTime;
     }
 
-    //TODO refactor this with good tests
+    private List<BusStopInBusLine> getBusStopsForSchedule(Schedule schedule) {
+        List<BusStopInBusLine> busStops = new ArrayList<>(schedule.getBusLine().getBusStops());
+
+        if (!busStops.get(busStops.size() - 1).getBusStop().equals(schedule.getDestinationStop())) {
+            Collections.reverse(busStops);
+        }
+        return busStops;
+    }
+
     @Transactional
     public List<ScheduleResponse> getSchedulesForBusStop(Long buStopId, Date startingTime, Integer duration) {
         Date endingTime = DateUtils.addMinutes(startingTime, duration);
         List<ScheduleResponse> result = new ArrayList<>();
         BusStop busStop = this.busStopService.getBusStopById(buStopId);
 
-        for(BusStopInBusLine busLine : busStop.getBusLines()) {
+        for (BusStopInBusLine busLine : busStop.getBusLines()) {
 
-            for(Schedule schedule : busLine.getBusLine().getSchedules()) {
+            for (Schedule schedule : busLine.getBusLine().getSchedules()) {
                 Date arrivalTime = this.getArrivalTimeForBusStop(schedule, busStop);
-                if(arrivalTime.after(startingTime) && arrivalTime.before(endingTime)) {
+                if (arrivalTime.after(startingTime) && arrivalTime.before(endingTime)) {
                     result.add(new ScheduleResponse(schedule.getId(), this.modelMapper.map(busLine.getBusLine(), BusLineResponse.class)
                             , arrivalTime
                             , new BusStopInBusLineResponse(schedule.getDestinationStop(), arrivalTime)));
