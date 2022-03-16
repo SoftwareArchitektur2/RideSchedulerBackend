@@ -4,7 +4,6 @@ import de.hsw.ridescheduler.beans.BusLine;
 import de.hsw.ridescheduler.beans.BusStop;
 import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.beans.Schedule;
-import de.hsw.ridescheduler.dtos.BusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopInBusLineResponse;
 import de.hsw.ridescheduler.dtos.BusStopResponse;
 import de.hsw.ridescheduler.dtos.ScheduleResponse;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,11 +24,11 @@ import java.util.stream.Collectors;
 @Service
 public class BusLineService {
 
-    private BusLineRepository busLineRepository;
-    private BusStopInBusLineRepository busStopInBusLineRepository;
-    private ModelMapper modelMapper;
+    private final BusLineRepository busLineRepository;
+    private final BusStopInBusLineRepository busStopInBusLineRepository;
+    private final ModelMapper modelMapper;
 
-    private BusStopService busStopService;
+    private final BusStopService busStopService;
 
     @Autowired
     public BusLineService(BusLineRepository busLineRepository, BusStopInBusLineRepository busStopInBusLineRepository, BusStopService busStopService, ModelMapper modelMapper) {
@@ -107,7 +105,6 @@ public class BusLineService {
         return response;
     }
 
-    @Transactional
     private Date iterateOverBusStopsForSchedule(Schedule schedule, List<BusStopInBusLine> busStops, Long busStopId) {
         Date arrivalTime = schedule.getDepartureTime();
         for(BusStopInBusLine busStopInBusLine : busStops) {
@@ -120,7 +117,6 @@ public class BusLineService {
         throw new BusStopNotExistsException(busStopId);
     }
 
-    @Transactional
     private Date iterateBackwardsOverBusStopsForSchedule(Schedule schedule, List<BusStopInBusLine> busStops, Long busStopId) {
         Date arrivalTime = schedule.getDepartureTime();
         for(int i = busStops.size() - 1; i > 0; i--) {
@@ -187,9 +183,9 @@ public class BusLineService {
     public void deleteBusLineById(Long busLineId) {
         BusLine busLine = this.getBusLineById(busLineId);
         if(!busLine.getSchedules().isEmpty()) {
-            String schedules = "";
+            StringBuilder schedules = new StringBuilder();
             for(Schedule schedule : busLine.getSchedules()) {
-                schedules += schedule.getId() + " ";
+                schedules.append(schedule.getId()).append(" ");
             }
             throw new BusLineHasSchedulesException(busLine.getName());
         }

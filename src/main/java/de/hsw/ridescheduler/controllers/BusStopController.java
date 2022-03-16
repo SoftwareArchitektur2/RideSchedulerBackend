@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 , methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH, RequestMethod.TRACE, RequestMethod.PUT})
 public class BusStopController {
 
-    private BusStopService busStopService;
-    private ScheduleService scheduleService;
-    private ModelMapper modelMapper;
+    private final BusStopService busStopService;
+    private final ScheduleService scheduleService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public BusStopController(BusStopService busStopService, ScheduleService scheduleService, ModelMapper modelMapper) {
@@ -61,7 +61,7 @@ public class BusStopController {
 
     @PostMapping("/busStops/")
     public ResponseEntity<BusStopResponse> addBusStop(@RequestBody AddBusStopRequest addBusStopRequest) {
-        return new ResponseEntity<BusStopResponse>(this.modelMapper.map(
+        return new ResponseEntity<>(this.modelMapper.map(
                 this.busStopService.saveBusStop(this.modelMapper.map(addBusStopRequest, BusStop.class))
                 , BusStopResponse.class), HttpStatus.CREATED);
     }

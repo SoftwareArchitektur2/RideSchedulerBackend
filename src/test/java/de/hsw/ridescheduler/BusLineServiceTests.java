@@ -13,7 +13,6 @@ import de.hsw.ridescheduler.services.ScheduleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE) // allow additional method-level @Sql statements
 public class BusLineServiceTests {
 
-    private BusLineService busLineService;
-    private BusStopService busStopService;
-    private ScheduleService scheduleService;
+    private final BusLineService busLineService;
+    private final BusStopService busStopService;
+    private final ScheduleService scheduleService;
 
-    private BusStopInBusLineRepository repository;
+    private final BusStopInBusLineRepository repository;
 
     @Autowired
     public BusLineServiceTests(BusLineService busLineService, BusStopService busStopService, ScheduleService scheduleService, BusStopInBusLineRepository repository) {

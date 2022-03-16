@@ -40,7 +40,7 @@ public class ScheduleController {
 
     @PostMapping("/schedules/")
     public ResponseEntity<ScheduleResponse> addSchedule(@RequestBody AddScheduleRequest addScheduleRequest) {
-        return new ResponseEntity<ScheduleResponse>(this.modelMapper.map(
+        return new ResponseEntity<>(this.modelMapper.map(
                 this.scheduleService.createSchedule(addScheduleRequest.getBusLineId(), addScheduleRequest.getDepartureTime(), addScheduleRequest.getDestinationStopId())
                 , ScheduleResponse.class), HttpStatus.CREATED);
     }

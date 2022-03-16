@@ -30,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE) // allow additional method-level @Sql statements
 public class ScheduleServiceTests {
 
-    private ScheduleService scheduleService;
-    private BusLineService busLineService;
-    private BusStopService busStopService;
+    private final ScheduleService scheduleService;
+    private final BusLineService busLineService;
+    private final BusStopService busStopService;
 
     @Autowired
     public ScheduleServiceTests(ScheduleService scheduleService, BusLineService busLineService, BusStopService busStopService) {

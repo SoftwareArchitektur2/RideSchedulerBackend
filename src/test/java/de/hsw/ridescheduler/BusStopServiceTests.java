@@ -1,19 +1,14 @@
 package de.hsw.ridescheduler;
 
 import de.hsw.ridescheduler.beans.BusStop;
-import de.hsw.ridescheduler.beans.BusStopInBusLine;
 import de.hsw.ridescheduler.dtos.BusLineResponse;
-import de.hsw.ridescheduler.dtos.ScheduleResponse;
 import de.hsw.ridescheduler.services.BusStopService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

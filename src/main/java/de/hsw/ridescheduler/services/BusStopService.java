@@ -18,13 +18,11 @@ import java.util.stream.Collectors;
 @Service
 public class BusStopService {
 
-    private BusStopRepository busStopRepository;
-    private ModelMapper modelMapper;
+    private final BusStopRepository busStopRepository;
 
     @Autowired
-    public BusStopService(BusStopRepository busStopRepository, ModelMapper modelMapper) {
+    public BusStopService(BusStopRepository busStopRepository) {
         this.busStopRepository = busStopRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Transactional
@@ -78,11 +76,11 @@ public class BusStopService {
     public void deleteBusStopById(Long id) {
         BusStop busStop = this.getBusStopById(id);
         if (!busStop.getBusLines().isEmpty()) {
-            String names = "";
+            StringBuilder names = new StringBuilder();
             for (BusStopInBusLine bus : busStop.getBusLines()) {
-                names += bus.getBusLine().getName() + ",";
+                names.append(bus.getBusLine().getName()).append(",");
             }
-            throw new BusStopHasBusLinesException(names);
+            throw new BusStopHasBusLinesException(names.toString());
 
         }
         busStopRepository.deleteById(id);

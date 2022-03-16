@@ -20,14 +20,12 @@ import java.util.stream.Collectors;
 , methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.PATCH, RequestMethod.TRACE, RequestMethod.PUT})
 public class BusLineController {
 
-    private BusLineService busLineService;
-    private BusStopService busStopService;
-    private ModelMapper modelMapper;
+    private final BusLineService busLineService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public BusLineController(BusLineService busLineService, BusStopService busStopService, ModelMapper modelMapper) {
+    public BusLineController(BusLineService busLineService, ModelMapper modelMapper) {
         this.busLineService = busLineService;
-        this.busStopService = busStopService;
         this.modelMapper = modelMapper;
     }
 
@@ -41,7 +39,7 @@ public class BusLineController {
 
     @PostMapping("/busLines/")
     public ResponseEntity<BusLineResponse> addBusline(@RequestBody AddBusLineRequest addBusLineRequest) {
-        return new ResponseEntity<BusLineResponse>(this.modelMapper.map(
+        return new ResponseEntity<>(this.modelMapper.map(
                 this.busLineService.saveBusLine(this.modelMapper.map(addBusLineRequest, BusLine.class)),
                 BusLineResponse.class), HttpStatus.CREATED);
     }
@@ -80,7 +78,7 @@ public class BusLineController {
     @GetMapping("/busLines/{busLineId}/busStops/{busStopId}/schedules")
     public List<ArrivalTimeResponse> getSchedulesForBusStop(@PathVariable("busLineId") Long busLineId,
             @PathVariable("busStopId") Long busStopId) {
-        return this.busLineService.getSchedulesForBusStop(busLineId, busStopId).stream().map(arrivalTime -> new ArrivalTimeResponse(arrivalTime)).collect(Collectors.toList());
+        return this.busLineService.getSchedulesForBusStop(busLineId, busStopId).stream().map(ArrivalTimeResponse::new).collect(Collectors.toList());
     }
 
     @DeleteMapping("/busLines/busStops/{busLineInBusStopId}")
