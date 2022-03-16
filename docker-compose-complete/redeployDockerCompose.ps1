@@ -1,12 +1,12 @@
 Write-Host "Starting Ride-Scheduler..."
 
-docker compose down 2>&1 > tmp.txt
+docker compose down  1> tmp.txt
 Remove-Item tmp.txt
 
 Write-Host "Still starting Ride-Scheduler..."
 docker compose build --quiet
 Write-Host "Still starting Ride-Scheduler..."
-docker compose up -d 2>&1 > tmp.txt
+docker compose up -d 1> tmp.txt
 Remove-Item tmp.txt
 
 Write-Host ""
