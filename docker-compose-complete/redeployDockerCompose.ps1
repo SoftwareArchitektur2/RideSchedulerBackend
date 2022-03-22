@@ -1,3 +1,7 @@
+$Host.UI.RawUI.BackgroundColor = "White"
+$Host.UI.RawUI.ForegroundColor = "Black"
+$host.UI.RawUI.WindowTitle = 'Ride-Scheduler'
+
 Write-Host "Starting Ride-Scheduler..."
 
 docker compose down  1> tmp.txt
