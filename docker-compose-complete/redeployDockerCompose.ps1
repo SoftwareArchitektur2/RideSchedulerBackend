@@ -19,3 +19,6 @@ Write-Host "| |_/ /_  __| | ___  \ ``--.  ___| |__   ___  __| |_   _| | ___ _ __
 Write-Host "|    /| |/ _`` |/ _ \  ``--. \/ __| '_ \ / _ \/ _`` | | | | |/ _ \ '__|"
 Write-Host "| |\ \| | (_| |  __/ /\__/ / (__| | | |  __/ (_| | |_| | |  __/ |   "
 Write-Host "\_| \_|_|\__,_|\___| \____/ \___|_| |_|\___|\__,_|\__,_|_|\___|_|   "
+
+Write-Host "Ride-Scheduler is now available at http://localhost/"
+Read-Host -Prompt "Press Enter to exit"
