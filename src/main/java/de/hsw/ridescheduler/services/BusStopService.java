@@ -34,6 +34,7 @@ public class BusStopService {
         return this.busStopRepository.save(busStop);
     }
 
+    @Transactional
     public List<BusStop> getAllBusStops() {
         return this.busStopRepository
                 .findAll()
@@ -52,10 +53,13 @@ public class BusStopService {
 
     @Transactional
     public void changeName(Long id, String name) {
+        BusStop busStop = this.getBusStopById(id);
+        if(busStop.getName().equals(name)) {
+            return;
+        }
         if(this.busStopRepository.existsByName(name)) {
             throw new BusStopAlreadyExistsException(name);
         }
-        BusStop busStop = this.getBusStopById(id);
         busStop.setName(name);
         this.busStopRepository.save(busStop);
     }
@@ -66,7 +70,6 @@ public class BusStopService {
         busStop.setHasWifi(hasWifi);
         this.busStopRepository.save(busStop);
     }
-
 
     @Transactional
     public List<BusLineResponse> getBusLinesForBusStop(Long id) {
