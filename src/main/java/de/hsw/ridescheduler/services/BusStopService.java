@@ -54,14 +54,13 @@ public class BusStopService {
     @Transactional
     public void changeName(Long id, String name) {
         BusStop busStop = this.getBusStopById(id);
-        if(busStop.getName().equals(name)) {
-            return;
+        if(!busStop.getName().equals(name)) {
+            if(this.busStopRepository.existsByName(name)) {
+                throw new BusStopAlreadyExistsException(name);
+            }
+            busStop.setName(name);
+            this.busStopRepository.save(busStop);
         }
-        if(this.busStopRepository.existsByName(name)) {
-            throw new BusStopAlreadyExistsException(name);
-        }
-        busStop.setName(name);
-        this.busStopRepository.save(busStop);
     }
 
     @Transactional
