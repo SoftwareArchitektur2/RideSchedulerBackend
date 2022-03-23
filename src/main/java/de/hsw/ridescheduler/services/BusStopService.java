@@ -34,7 +34,6 @@ public class BusStopService {
         return this.busStopRepository.save(busStop);
     }
 
-    @Transactional
     public List<BusStop> getAllBusStops() {
         return this.busStopRepository
                 .findAll()

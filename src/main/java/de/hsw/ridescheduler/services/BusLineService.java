@@ -48,7 +48,7 @@ public class BusLineService {
     }
 
     public List<BusLine> getAllBusLines() {
-        return this.busLineRepository.findAll();
+        return this.busLineRepository.findAll().stream().sorted(Comparator.comparing(BusLine::getName)).collect(Collectors.toList());
     }
 
     public BusLine getBusLineByName(String name) {
