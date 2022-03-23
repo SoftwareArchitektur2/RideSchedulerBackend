@@ -173,10 +173,13 @@ public class BusLineService {
 
     @Transactional
     public void changeName(Long busLineId, String newName) {
+        BusLine busLine = this.getBusLineById(busLineId);
+        if(busLine.getName().equals(newName)) {
+            return;
+        }
         if (this.busLineRepository.existsByName(newName)) {
             throw new BusLineAlreadyExistsException(newName);
         }
-        BusLine busLine = this.getBusLineById(busLineId);
         busLine.setName(newName);
         this.busLineRepository.save(busLine);
     }
