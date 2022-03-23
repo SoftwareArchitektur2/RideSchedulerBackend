@@ -45,7 +45,7 @@ public class ScheduleServiceTests {
     @Sql("/nightBus.sql")
     public void testGetScheduleById() {
         Schedule schedule = this.scheduleService.getScheduleById(0L);
-        assertEquals(new Time(81000000L), schedule.getDepartureTime());
+        assertEquals("line1", schedule.getBusLine().getName());
     }
 
     @Test
@@ -131,7 +131,7 @@ public class ScheduleServiceTests {
         cal.set(Calendar.MILLISECOND,0);
         Date date = cal.getTime();
 
-        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(2L, date, 120);
+        List<ScheduleResponse> schedules = this.scheduleService.getSchedulesForBusStop(1L, date, 120);
         assertEquals(1, schedules.size());
         assertEquals("line1", schedules.get(0).getBusLine().getName());
         Date departureTime = DateUtils.addMinutes(date, 60);
