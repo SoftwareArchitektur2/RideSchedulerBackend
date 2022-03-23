@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,10 +83,10 @@ public class BusLineService {
 
     @Transactional
     public List<ScheduleResponse> getAllSchedules(Long busLineId) {
-        BusLine busLine = this.getBusLineById(busLineId);
-        return busLine.getSchedules()
+        return this.getBusLineById(busLineId).getSchedules()
                 .stream()
                 .map(schedule -> this.modelMapper.map(schedule, ScheduleResponse.class))
+                .sorted(Comparator.comparing(ScheduleResponse::getDepartureTime))
                 .collect(Collectors.toList());
     }
 
@@ -102,6 +103,7 @@ public class BusLineService {
                 response.add(iterateBackwardsOverBusStopsForSchedule(schedule, busStops, busStopId));
             }
         }
+        response.sort(Comparator.comparing(Date::getTime));
         return response;
     }
 

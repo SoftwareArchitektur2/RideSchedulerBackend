@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +35,11 @@ public class BusStopService {
     }
 
     public List<BusStop> getAllBusStops() {
-        return this.busStopRepository.findAll();
+        return this.busStopRepository
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparing(BusStop::getName))
+                .collect(Collectors.toList());
     }
 
     public Optional<BusStop> getBusStopByName(String name) {
@@ -65,10 +70,10 @@ public class BusStopService {
 
     @Transactional
     public List<BusLineResponse> getBusLinesForBusStop(Long id) {
-        BusStop busStop = this.getBusStopById(id);
-        return busStop.getBusLines()
+        return this.getBusStopById(id).getBusLines()
                 .stream()
                 .map(busLine -> new BusLineResponse(busLine.getBusLine().getId(), busLine.getBusLine().getName()))
+                .sorted(Comparator.comparing(BusLineResponse::getName))
                 .collect(Collectors.toList());
     }
 

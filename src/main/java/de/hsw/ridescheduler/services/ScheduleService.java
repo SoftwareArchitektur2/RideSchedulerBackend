@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Time;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
@@ -35,7 +36,11 @@ public class ScheduleService {
     }
 
     public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findAll();
+        return scheduleRepository
+                .findAll()
+                .stream()
+                .sorted(Comparator.comparing(Schedule::getDepartureTime))
+                .collect(Collectors.toList());
     }
 
     public Schedule getScheduleById(Long id) {
